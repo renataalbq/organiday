@@ -39,7 +39,7 @@ Cada tarefa recebe uma nota (`src/lib/priority/scoreTask.ts`) somando prioridade
 ### 1. Supabase
 
 1. Crie um projeto grátis em [supabase.com](https://supabase.com).
-2. Abra **SQL Editor → New query**, cole o conteúdo de `supabase/migrations/0001_init.sql` e rode. Isso cria as tabelas, as regras de acesso (cada usuário só vê os próprios dados) e as áreas padrão para quem se cadastrar.
+2. Abra **SQL Editor → New query**, cole o conteúdo de `supabase/migrations/0001_init.sql` e rode. Depois faça o mesmo com `0002_grants.sql`, que dá aos usuários logados acesso às tabelas. Isso cria as tabelas, as regras de acesso (cada usuário só vê os próprios dados) e as áreas padrão para quem se cadastrar.
 3. Em **Authentication → URL Configuration**:
    - **Site URL:** `http://localhost:5173` (troque pela URL da Vercel depois do deploy).
    - **Redirect URLs:** adicione `http://localhost:5173` e, depois, a URL da Vercel.
