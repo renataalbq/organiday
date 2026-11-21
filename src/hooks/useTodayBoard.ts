@@ -3,6 +3,7 @@ import { useAreas } from '../data/areas'
 import { useSettings } from '../data/settings'
 import { useTasks } from '../data/tasks'
 import { buildAttentionItems } from '../lib/attention/buildAttentionItems'
+import { buildDailySummary } from '../lib/daily/buildDailySummary'
 import { computeDayBudget } from '../lib/dayBudget/dayBudget'
 import { daysFromToday } from '../lib/dates'
 import { rankTasks } from '../lib/priority/scoreTask'
@@ -66,6 +67,7 @@ export function useTodayBoard() {
       .sort((a, b) => (a.due_date! + (a.due_time ?? '')).localeCompare(b.due_date! + (b.due_time ?? '')))
 
     const attention = buildAttentionItems({ openTasks, todayMeetings, budget, now })
+    const dailySummary = buildDailySummary({ tasks: allTasks, areasById, settings, now })
 
     const dueTodayCount = openTasks.filter((task) => task.kind === 'task' && task.due_date === todayISO).length
     const overdueCount = openTasks.filter(
@@ -82,6 +84,7 @@ export function useTodayBoard() {
       alsoToday,
       upcoming,
       attention,
+      dailySummary,
       dueTodayCount,
       overdueCount,
     }

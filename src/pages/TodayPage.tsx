@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card } from '../components/Card'
+import { DailySummaryCard } from '../components/DailySummaryCard'
 import { DayTimeline } from '../components/DayTimeline'
 import { Icon } from '../components/Icon'
 import { PinButton } from '../components/PinButton'
@@ -132,7 +133,7 @@ export function TodayPage() {
           )}
         </Card>
 
-        <StudiesCard />
+        <DailySummaryCard summary={board.dailySummary} className="lg:col-span-7" />
 
         <Card title="Prioridades de hoje" tone="mint" className="lg:col-span-5">
           {board.focus.length === 0 ? (
@@ -156,9 +157,11 @@ export function TodayPage() {
           </p>
         </Card>
 
+        <StudiesCard />
+
         {(board.alsoToday.length > 0 || board.upcoming.length > 0) && (
-          <Card title="No radar" className="lg:col-span-12">
-            <div className="grid gap-x-8 md:grid-cols-2">
+          <Card title="No radar" className="lg:col-span-5">
+            <div className="grid gap-x-8 gap-y-3 md:grid-cols-2 lg:grid-cols-1">
               <div>
                 <h3 className="eyebrow mb-1">Hoje e atrasadas</h3>
                 {board.alsoToday.length === 0 ? (

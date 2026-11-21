@@ -7,6 +7,7 @@ Painel pessoal para organizar trabalho, casa, estudos e o dia a dia. Funciona no
 ## O que tem
 
 - **Hoje:** saudação, seu expediente (tempo livre até o fim do expediente, linha do tempo com reuniões e almoço, e se as tarefas de trabalho cabem), agenda de reuniões, pra decidir, fica de olho, aprendendo (estudos em andamento), prioridades de hoje e no radar.
+- **Pra daily:** resumo pronto do que você concluiu nas áreas de trabalho e do plano do próximo dia, com impedimentos (decisões de trabalho em aberto). Durante o expediente mostra o último dia útil + hoje; depois do expediente e no fim de semana, o dia que passou + o próximo dia útil. O texto é editável (a edição fica salva no aparelho) e tem botão de copiar. Lógica em `src/lib/daily/buildDailySummary.ts`.
 - **Tarefas:** tudo agrupado em atrasadas, hoje, próximas e sem data, ordenado pela priorização automática. Dá pra filtrar por área e por tipo (tarefas, decisões, reuniões). O alfinete fixa uma tarefa nas prioridades de hoje.
 - **Inbox:** o que entrou sem área. Um toque na bolinha colorida move o item pra área certa.
 - **Estudos:** cursos e livros com progresso (+1 aula), prazo e ritmo necessário por semana.
