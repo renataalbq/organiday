@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { sendMagicLink, signInWithGoogle } from '../auth/SessionProvider'
 import { Icon, type IconName } from '../components/Icon'
+import { Logo } from '../components/Logo'
 import { APP_NAME } from '../config'
 
 const FEATURES: { icon: IconName; title: string; text: string; tone: string }[] = [
@@ -35,7 +36,7 @@ export function LoginPage() {
     <div className="min-h-dvh">
       <div className="mx-auto max-w-6xl px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-16 sm:px-8">
         <header className="flex items-center justify-between py-2">
-          <span className="font-display text-2xl font-extrabold tracking-tight text-lilac-deep">{APP_NAME}</span>
+          <Logo markSize={30} className="text-2xl text-lilac-deep" />
           <a href="#entrar" className="button-quiet lg:hidden">
             Entrar
           </a>
@@ -179,7 +180,7 @@ function AppPreview() {
           <Icon name="plus" size={16} className="text-lilac-deep" />
           <span className="truncate">daily dias úteis 9h30 ~15m #trab</span>
         </div>
-        <p className="mt-4 text-xs font-semibold text-ink-soft">O Tidy entendeu:</p>
+        <p className="mt-4 text-xs font-semibold text-ink-soft">O {APP_NAME} entendeu:</p>
         <div className="mt-2 flex flex-wrap gap-1.5">
           {PREVIEW_CHIPS.map((chip) => (
             <span key={chip.label} className={`chip text-xs ${chip.className}`}>

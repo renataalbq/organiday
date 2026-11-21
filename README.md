@@ -1,4 +1,4 @@
-# Tidy
+# Organiday
 
 Painel pessoal para organizar trabalho, casa, estudos e o dia a dia. Funciona no navegador e pode ser instalado no celular como app (PWA).
 
