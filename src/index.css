@@ -1,0 +1,103 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+
+  --color-cream: #efe6d2;
+  --color-paper: #f7f1e3;
+  --color-card: #fffcf5;
+  --color-line: #e6dcc5;
+
+  --color-navy: #1f3768;
+  --color-navy-soft: #5b6b8e;
+  --color-navy-faint: #8f9ab3;
+
+  --color-blue: #5677b3;
+  --color-blue-deep: #3f5f9e;
+  --color-blue-ink: #f4f7fd;
+  --color-sky: #dbe5f6;
+  --color-sky-deep: #c4d4ef;
+
+  --color-butter: #f6e4a0;
+  --color-butter-deep: #f1d36a;
+  --color-butter-ink: #5c4a12;
+
+  --color-alert: #b8463a;
+  --color-alert-soft: #f6dcd6;
+  --color-ok: #3d8c6e;
+
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  html {
+    background: var(--color-cream);
+    color: var(--color-navy);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-blue-deep);
+    outline-offset: 2px;
+  }
+
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[15px] outline-none transition-colors placeholder:text-navy-faint focus:border-blue;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-semibold text-navy-soft;
+  }
+
+  .button-primary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-blue-deep px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-navy disabled:opacity-50;
+  }
+
+  .button-quiet {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-navy-soft transition-colors hover:bg-black/5 hover:text-navy;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap;
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-bold tracking-[0.12em] text-navy-soft uppercase;
+  }
+}
+
+@keyframes check-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@keyframes sheet-in {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
