@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Tidy',
-        short_name: 'Tidy',
+        name: 'Organiday',
+        short_name: 'Organiday',
         description: 'Trabalho, casa, estudos e o que mais couber no seu dia, num lugar só.',
         lang: 'pt-BR',
         start_url: '/',

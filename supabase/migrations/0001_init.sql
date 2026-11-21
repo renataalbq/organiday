@@ -1,4 +1,4 @@
--- Tidy: schema inicial
+-- Organiday: schema inicial
 -- Rode no Supabase em: SQL Editor → New query → cole este arquivo → Run
 
 -- ─── Áreas ────────────────────────────────────────────────────────────────

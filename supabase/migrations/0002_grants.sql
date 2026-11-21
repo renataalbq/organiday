@@ -1,4 +1,4 @@
--- Tidy: permissões das tabelas para usuários logados
+-- Organiday: permissões das tabelas para usuários logados
 -- Projetos Supabase novos não expõem as tabelas do schema public à API
 -- automaticamente. Sem estes grants o app recebe
 -- "permission denied for table ...". O RLS da 0001 continua valendo:

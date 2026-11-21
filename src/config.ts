@@ -1,1 +1,1 @@
-export const APP_NAME = 'Tidy'
+export const APP_NAME = 'Organiday'

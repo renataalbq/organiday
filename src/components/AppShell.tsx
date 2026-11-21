@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
 import { NavLink, useLocation, useSearchParams } from 'react-router-dom'
-import { APP_NAME } from '../config'
 import { useAreas } from '../data/areas'
 import { useTasks } from '../data/tasks'
 import { Icon, type IconName } from './Icon'
+import { Logo } from './Logo'
 import { QuickAdd } from './QuickAdd'
 
 interface NavItem {
@@ -39,7 +39,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex min-w-0 flex-1 flex-col bg-paper">
           <div className="sticky top-0 z-20 border-b border-line/60 bg-paper/95 px-4 pt-[max(.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur sm:px-6 lg:static lg:border-0 lg:bg-transparent lg:pt-5 lg:backdrop-blur-none">
             <div className="mb-3 flex items-center justify-between lg:hidden">
-              <span className="font-display text-2xl font-extrabold tracking-tight text-lilac-deep">{APP_NAME}</span>
+              <Logo markSize={28} className="text-2xl text-lilac-deep" />
               <NavLink to="/ajustes" className="button-quiet p-2" aria-label="Ajustes">
                 <Icon name="settings" />
               </NavLink>
@@ -67,7 +67,7 @@ function Sidebar({ items }: { items: NavItem[] }) {
   return (
     <aside className="hidden w-60 shrink-0 flex-col bg-lilac px-4 py-6 text-lilac-ink lg:flex">
       <div className="mb-8 px-2">
-        <p className="font-display text-[2rem] leading-none font-extrabold tracking-tight">{APP_NAME}</p>
+        <Logo markSize={32} className="text-[1.75rem] leading-none" />
       </div>
 
       <p className="eyebrow mb-2 px-2 text-lilac-ink/60">Geral</p>
