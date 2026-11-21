@@ -26,6 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const counts = useNavCounts()
   const mainItems: NavItem[] = [
     { to: '/', label: 'Hoje', icon: 'today' },
+    { to: '/dia', label: 'Dia', icon: 'calendar' },
     { to: '/tarefas', label: 'Tarefas', icon: 'tasks', count: counts.tasks },
     { to: '/inbox', label: 'Inbox', icon: 'inbox', count: counts.inbox },
     { to: '/estudos', label: 'Estudos', icon: 'study' },
@@ -133,7 +134,7 @@ function SidebarLink({ to, label, icon, count, isActive }: NavItem & { isActive?
 function MobileTabBar({ items }: { items: NavItem[] }) {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-      <div className="mx-auto grid max-w-md grid-cols-4">
+      <div className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
         {items.map((item) => (
           <NavLink
             key={item.to}
