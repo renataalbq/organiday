@@ -17,7 +17,7 @@ export function Sheet({ label, onClose, onSubmit, children }: SheetProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-navy/30 sm:items-center sm:p-6"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 sm:items-center sm:p-6"
       onClick={onClose}
     >
       <form

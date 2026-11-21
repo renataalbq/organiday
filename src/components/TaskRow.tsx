@@ -9,11 +9,11 @@ import { useTaskEditor } from './TaskEditor'
 interface TaskRowProps {
   task: Task
   area?: Area
-  /** motivos da priorização, mostrados no Foco do dia */
+  /** motivos da priorização, mostrados nas Prioridades de hoje */
   reasons?: string[]
   showDate?: boolean
   isPinned?: boolean
-  /** ação extra à direita (ex.: fixar no foco) */
+  /** ação extra à direita (ex.: fixar nas prioridades) */
   trailing?: ReactNode
 }
 
@@ -23,7 +23,7 @@ export function TaskRow({ task, area, reasons, showDate = true, isPinned = false
   const reopenTask = useReopenTask()
   const isDone = task.status === 'done'
   const isOverdue = !isDone && task.due_date !== null && daysFromToday(task.due_date) < 0
-  const ringColor = area?.color ?? 'var(--color-navy-faint)'
+  const ringColor = area?.color ?? 'var(--color-ink-faint)'
 
   const toggle = () => (isDone ? reopenTask.mutate(task.id) : completeTask.mutate(task.id))
 
@@ -40,12 +40,12 @@ export function TaskRow({ task, area, reasons, showDate = true, isPinned = false
       </button>
 
       <button type="button" onClick={() => openTask(task)} className="min-w-0 flex-1 text-left">
-        <span className={`block text-[15px] leading-snug font-medium ${isDone ? 'text-navy-faint line-through' : ''}`}>
+        <span className={`block text-[15px] leading-snug font-medium ${isDone ? 'text-ink-faint line-through' : ''}`}>
           {task.title}
         </span>
-        <span className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-navy-soft">
+        <span className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-soft">
           {isPinned && (
-            <span className="inline-flex items-center gap-0.5 font-semibold text-blue-deep">
+            <span className="inline-flex items-center gap-0.5 font-semibold text-moss-deep">
               <Icon name="pin" size={12} /> fixada
             </span>
           )}
@@ -76,7 +76,7 @@ export function TaskRow({ task, area, reasons, showDate = true, isPinned = false
               {area.name}
             </span>
           )}
-          {reasons && reasons.length > 0 && <span className="text-navy-faint">{reasons.slice(0, 2).join(', ')}</span>}
+          {reasons && reasons.length > 0 && <span className="text-ink-faint">{reasons.slice(0, 2).join(', ')}</span>}
         </span>
       </button>
       {trailing}

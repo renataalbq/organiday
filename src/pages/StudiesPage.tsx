@@ -16,7 +16,7 @@ export function StudiesPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-[2rem] leading-tight font-extrabold tracking-tight">Estudos</h1>
-          <p className="text-sm text-navy-soft">
+          <p className="text-sm text-ink-soft">
             Cursos, livros e certificações em andamento. Use o + para avançar uma aula.
           </p>
         </div>
@@ -26,12 +26,12 @@ export function StudiesPage() {
       </header>
 
       {isLoading ? (
-        <p className="text-navy-soft">Carregando…</p>
+        <p className="text-ink-soft">Carregando…</p>
       ) : studies.length === 0 ? (
         <button
           type="button"
           onClick={() => setEditing('new')}
-          className="w-full rounded-[var(--radius-card)] border border-dashed border-line bg-card p-6 text-left text-navy-soft hover:border-blue"
+          className="w-full rounded-[var(--radius-card)] border border-dashed border-line bg-card p-6 text-left text-ink-soft hover:border-moss"
         >
           Nada por aqui ainda. Cadastre o que você está estudando para ver o progresso e quanto falta por semana.
         </button>

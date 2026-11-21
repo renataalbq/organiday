@@ -38,20 +38,20 @@ export function StudyRow({ study, onOpen }: StudyRowProps) {
     <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1.5 py-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
       <button type="button" onClick={() => onOpen(study)} className="col-start-1 row-start-1 min-w-0 text-left">
         <span className="block truncate text-[15px] font-semibold">{study.title}</span>
-        <span className="block truncate text-xs text-navy-soft">
+        <span className="block truncate text-xs text-ink-soft">
           {hint ?? (study.status === 'paused' ? 'pausado' : study.status === 'done' ? 'concluído' : 'sem prazo')}
         </span>
       </button>
 
       <div className="col-span-2 col-start-1 row-start-2 sm:col-span-1 sm:col-start-2 sm:row-start-1">
-        <div className="mb-1 flex justify-between gap-2 text-xs font-semibold text-navy-soft">
+        <div className="mb-1 flex justify-between gap-2 text-xs font-semibold text-ink-soft">
           <span>
             {study.progress} / {study.total} {study.unit_label}
           </span>
           <span>{percent}%</span>
         </div>
         <div
-          className="h-2 overflow-hidden rounded-full bg-sky"
+          className="h-2 overflow-hidden rounded-full bg-mint"
           role="progressbar"
           aria-valuenow={percent}
           aria-valuemin={0}
@@ -59,7 +59,7 @@ export function StudyRow({ study, onOpen }: StudyRowProps) {
           aria-label={study.title}
         >
           <div
-            className="h-full rounded-full bg-blue transition-[width] duration-300"
+            className="h-full rounded-full bg-moss transition-[width] duration-300"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -78,7 +78,7 @@ export function StudyRow({ study, onOpen }: StudyRowProps) {
         <button
           type="button"
           onClick={() => step(1)}
-          className="grid size-8 place-items-center rounded-full bg-sky text-blue-deep hover:bg-sky-deep"
+          className="grid size-8 place-items-center rounded-full bg-mint text-moss-deep hover:bg-mint-deep"
           aria-label={`Avançar 1 em ${study.title}`}
           disabled={study.progress === study.total}
         >

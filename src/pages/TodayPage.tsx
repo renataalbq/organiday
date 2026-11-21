@@ -33,21 +33,21 @@ export function TodayPage() {
   const { weekday, date } = formatLongToday(board.now)
   const name = board.settings.display_name
 
-  if (board.isLoading) return <p className="p-8 text-navy-soft">Carregando seu dia…</p>
+  if (board.isLoading) return <p className="p-8 text-ink-soft">Carregando seu dia…</p>
   if (board.error) return <p className="p-8 font-semibold text-alert">Não deu pra carregar: {board.error.message}</p>
 
   return (
     <div className="space-y-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="eyebrow text-blue-deep">
+          <p className="eyebrow text-moss-deep">
             {weekday}, {date}
           </p>
           <h1 className="font-display text-[2rem] leading-tight font-extrabold tracking-tight sm:text-[2.5rem]">
             {greeting(board.now)}
             {name ? `, ${name}` : ''}
           </h1>
-          <p className="mt-0.5 text-sm text-navy-soft">
+          <p className="mt-0.5 text-sm text-ink-soft">
             {plural(board.dueTodayCount, 'tarefa hoje', 'tarefas hoje')},{' '}
             {plural(board.overdueCount, 'atrasada', 'atrasadas')}
             {board.todayMeetings.length > 0 && `, ${plural(board.todayMeetings.length, 'reunião', 'reuniões')}`}
@@ -69,7 +69,7 @@ export function TodayPage() {
         />
 
         <Card
-          title="Reuniões de hoje"
+          title="Agenda"
           className="lg:col-span-4"
           action={
             <button
@@ -89,13 +89,13 @@ export function TodayPage() {
           />
         </Card>
 
-        <Card title="Decisões a tomar" tone="butter" className="lg:col-span-7">
+        <Card title="Pra decidir" tone="peach" className="lg:col-span-7">
           {board.decisions.length === 0 ? (
-            <p className="text-sm text-butter-ink/80">
+            <p className="text-sm text-peach-ink/80">
               Nada pra decidir. Escreva uma pergunta terminando com "?" e ela aparece aqui.
             </p>
           ) : (
-            <ul className="divide-y divide-butter-ink/10">
+            <ul className="divide-y divide-peach-ink/10">
               {board.decisions.slice(0, 5).map((decision) => (
                 <DecisionRow key={decision.id} decision={decision} onOpen={openTask} />
               ))}
@@ -103,9 +103,9 @@ export function TodayPage() {
           )}
         </Card>
 
-        <Card title="Atenção agora" className="bg-paper lg:col-span-5">
+        <Card title="Fica de olho" className="bg-paper lg:col-span-5">
           {board.attention.length === 0 ? (
-            <p className="rounded-xl bg-sky/60 p-3 text-sm text-navy-soft">
+            <p className="rounded-xl bg-mint/60 p-3 text-sm text-ink-soft">
               Nada urgente agora. Prazos e reuniões estão em dia.
             </p>
           ) : (
@@ -119,7 +119,7 @@ export function TodayPage() {
                       disabled={!task}
                       onClick={() => task && openTask(task)}
                       className={`flex w-full items-start gap-2 rounded-xl p-3 text-left text-sm font-medium ${
-                        item.tone === 'alert' ? 'bg-alert-soft text-alert' : 'bg-butter/60 text-butter-ink'
+                        item.tone === 'alert' ? 'bg-alert-soft text-alert' : 'bg-peach/60 text-peach-ink'
                       }`}
                     >
                       <Icon name={item.tone === 'alert' ? 'alert' : 'clock'} size={16} className="mt-0.5" />
@@ -134,11 +134,11 @@ export function TodayPage() {
 
         <StudiesCard />
 
-        <Card title="Foco do dia" tone="sky" className="lg:col-span-5">
+        <Card title="Prioridades de hoje" tone="mint" className="lg:col-span-5">
           {board.focus.length === 0 ? (
-            <p className="text-sm text-navy-soft">Sem tarefas abertas. Adicione uma no campo lá em cima.</p>
+            <p className="text-sm text-ink-soft">Sem tarefas abertas. Adicione uma no campo lá em cima.</p>
           ) : (
-            <div className="divide-y divide-blue/10">
+            <div className="divide-y divide-moss/10">
               {board.focus.map(({ task, reasons, isPinned }) => (
                 <TaskRow
                   key={task.id}
@@ -151,18 +151,18 @@ export function TodayPage() {
               ))}
             </div>
           )}
-          <p className="mt-2 text-xs text-navy-soft">
-            Escolhidas por prazo, prioridade e área. Fixe outra tarefa com o alfinete.
+          <p className="mt-2 text-xs text-ink-soft">
+            Escolhidas por prazo, prioridade e área. Use o alfinete para fixar outra.
           </p>
         </Card>
 
         {(board.alsoToday.length > 0 || board.upcoming.length > 0) && (
-          <Card title="Também pra hoje e próximos dias" className="lg:col-span-12">
+          <Card title="No radar" className="lg:col-span-12">
             <div className="grid gap-x-8 md:grid-cols-2">
               <div>
                 <h3 className="eyebrow mb-1">Hoje e atrasadas</h3>
                 {board.alsoToday.length === 0 ? (
-                  <p className="py-2 text-sm text-navy-faint">Só o que está no foco.</p>
+                  <p className="py-2 text-sm text-ink-faint">Só o que já está nas prioridades.</p>
                 ) : (
                   board.alsoToday.map((task) => (
                     <TaskRow
@@ -177,7 +177,7 @@ export function TodayPage() {
               <div>
                 <h3 className="eyebrow mb-1">Próximos 7 dias</h3>
                 {board.upcoming.length === 0 ? (
-                  <p className="py-2 text-sm text-navy-faint">Semana livre por enquanto.</p>
+                  <p className="py-2 text-sm text-ink-faint">Semana livre por enquanto.</p>
                 ) : (
                   board.upcoming.map((task) => (
                     <TaskRow
@@ -221,7 +221,7 @@ function DayCard({
   const slack = budget.freeFromNowMinutes - budget.plannedMinutes
 
   return (
-    <Card title="Seu dia de trabalho" tone="blue" className="lg:col-span-8">
+    <Card title="Seu expediente" tone="moss" className="lg:col-span-8">
       {budget.isWorkday ? (
         <>
           <div className="mb-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
@@ -229,7 +229,7 @@ function DayCard({
               <p className="font-display text-5xl leading-none font-extrabold tracking-tight">
                 {formatDuration(hasEnded ? 0 : budget.freeFromNowMinutes)}
               </p>
-              <p className="mt-1.5 text-sm text-blue-ink/85">
+              <p className="mt-1.5 text-sm text-moss-ink/85">
                 {hasEnded
                   ? 'Expediente encerrado por hoje.'
                   : `livres até as ${minutesToClock(budget.workdayEnd)}, fora reuniões e almoço`}
@@ -237,15 +237,15 @@ function DayCard({
             </div>
             <dl className="flex gap-5 text-sm">
               <div>
-                <dt className="text-blue-ink/70">Expediente</dt>
+                <dt className="text-moss-ink/70">Expediente</dt>
                 <dd className="font-display text-lg font-bold">{formatDuration(budget.workMinutes)}</dd>
               </div>
               <div>
-                <dt className="text-blue-ink/70">Em reuniões</dt>
+                <dt className="text-moss-ink/70">Em reuniões</dt>
                 <dd className="font-display text-lg font-bold">{formatDuration(budget.meetingMinutes)}</dd>
               </div>
               <div>
-                <dt className="text-blue-ink/70">Tarefas</dt>
+                <dt className="text-moss-ink/70">Tarefas</dt>
                 <dd className="font-display text-lg font-bold">{formatDuration(budget.plannedMinutes)}</dd>
               </div>
             </dl>
@@ -255,7 +255,7 @@ function DayCard({
 
           {!hasEnded && budget.plannedMinutes > 0 && (
             <p
-              className={`mt-3 rounded-xl px-3 py-2 text-sm font-medium ${fits ? 'bg-white/15' : 'bg-butter text-butter-ink'}`}
+              className={`mt-3 rounded-xl px-3 py-2 text-sm font-medium ${fits ? 'bg-white/15' : 'bg-peach text-peach-ink'}`}
             >
               {fits
                 ? `Suas tarefas de trabalho cabem no dia, com ${formatDuration(slack)} de folga.`
@@ -268,8 +268,8 @@ function DayCard({
       ) : (
         <div>
           <p className="font-display text-4xl leading-none font-extrabold tracking-tight">Fim de semana</p>
-          <p className="mt-2 text-sm text-blue-ink/85">
-            Sem expediente hoje. O foco puxa mais as coisas de casa e pessoais.
+          <p className="mt-2 text-sm text-moss-ink/85">
+            Sem expediente hoje. As prioridades puxam mais as coisas de casa e pessoais.
           </p>
           {budget.segments.length > 0 && (
             <div className="mt-4">
@@ -296,7 +296,7 @@ function MeetingList({
   const all = [...meetings, ...done].sort((a, b) => a.due_time!.localeCompare(b.due_time!))
   if (all.length === 0) {
     return (
-      <p className="text-sm text-navy-soft">
+      <p className="text-sm text-ink-soft">
         Nenhuma reunião hoje. Para adicionar, escreva algo como "daily 9h30 ~15m".
       </p>
     )
@@ -312,7 +312,7 @@ function MeetingList({
             <button
               type="button"
               onClick={() => onOpen(meeting)}
-              className={`flex w-full items-baseline gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-black/5 ${isPast ? 'text-navy-faint' : ''}`}
+              className={`flex w-full items-baseline gap-3 rounded-lg px-2 py-1.5 text-left hover:bg-black/5 ${isPast ? 'text-ink-faint' : ''}`}
             >
               <span className="w-24 shrink-0 text-sm font-semibold tabular-nums">
                 {formatTime(meeting.due_time!)}–{minutesToClock(end)}
@@ -320,7 +320,7 @@ function MeetingList({
               <span className={`min-w-0 flex-1 truncate text-sm ${isPast ? 'line-through' : 'font-medium'}`}>
                 {meeting.title}
               </span>
-              {isNow && <span className="chip bg-butter text-butter-ink">agora</span>}
+              {isNow && <span className="chip bg-peach text-peach-ink">agora</span>}
             </button>
           </li>
         )
@@ -344,19 +344,19 @@ function DecisionRow({ decision, onOpen }: { decision: Task; onOpen: (task: Task
       <button
         type="button"
         onClick={() => onOpen(decision)}
-        className="min-w-0 flex-1 text-left text-[15px] leading-snug font-medium text-butter-ink"
+        className="min-w-0 flex-1 text-left text-[15px] leading-snug font-medium text-peach-ink"
       >
         {decision.title}
       </button>
       <span
-        className={`chip ${days !== null && days <= 0 ? 'bg-alert-soft text-alert' : 'bg-butter-deep/70 text-butter-ink'}`}
+        className={`chip ${days !== null && days <= 0 ? 'bg-alert-soft text-alert' : 'bg-peach-deep/70 text-peach-ink'}`}
       >
         {deadlineLabel}
       </span>
       <button
         type="button"
         onClick={() => completeTask.mutate(decision.id)}
-        className="chip bg-card text-butter-ink hover:bg-white"
+        className="chip bg-card text-peach-ink hover:bg-white"
         aria-label={`Marcar "${decision.title}" como decidida`}
       >
         <Icon name="check" size={12} /> decidi
@@ -372,7 +372,7 @@ function StudiesCard() {
 
   return (
     <Card
-      title="Estudando agora"
+      title="Aprendendo"
       className="lg:col-span-7"
       action={
         <Link to="/estudos" className="button-quiet -my-2 -mr-2">
@@ -384,7 +384,7 @@ function StudiesCard() {
         <button
           type="button"
           onClick={() => setEditing('new')}
-          className="w-full rounded-xl border border-dashed border-line p-4 text-left text-sm text-navy-soft hover:border-blue"
+          className="w-full rounded-xl border border-dashed border-line p-4 text-left text-sm text-ink-soft hover:border-moss"
         >
           Nenhum estudo em andamento. Cadastre um curso, livro ou certificação para acompanhar o progresso.
         </button>

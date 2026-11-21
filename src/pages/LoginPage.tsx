@@ -22,9 +22,9 @@ export function LoginPage() {
   return (
     <main className="grid min-h-dvh place-items-center p-5">
       <div className="w-full max-w-sm">
-        <div className="mb-6 rounded-[1.5rem] bg-blue p-6 text-blue-ink">
+        <div className="mb-6 rounded-[1.5rem] bg-moss p-6 text-moss-ink">
           <p className="font-display text-5xl font-extrabold tracking-tight">{APP_NAME}</p>
-          <p className="mt-2 text-blue-ink/85">Trabalho, casa, estudos e o que mais couber no seu dia, num lugar só.</p>
+          <p className="mt-2 text-moss-ink/85">Trabalho, casa, estudos e o que mais couber no seu dia, num lugar só.</p>
         </div>
 
         <div className="rounded-[1.5rem] border border-line bg-card p-5">
@@ -32,13 +32,13 @@ export function LoginPage() {
             Entrar com Google
           </button>
 
-          <div className="my-4 flex items-center gap-3 text-xs text-navy-faint">
+          <div className="my-4 flex items-center gap-3 text-xs text-ink-faint">
             <span className="h-px flex-1 bg-line" /> ou receba um link por e-mail{' '}
             <span className="h-px flex-1 bg-line" />
           </div>
 
           {status === 'sent' ? (
-            <p className="rounded-xl bg-sky p-3 text-sm">
+            <p className="rounded-xl bg-mint p-3 text-sm">
               Link enviado para {email}. Abra o e-mail neste aparelho para entrar.
             </p>
           ) : (

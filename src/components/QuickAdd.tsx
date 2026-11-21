@@ -6,14 +6,14 @@ import { parseQuickAdd, type QuickAddTokenKind } from '../lib/quickAdd/parseQuic
 import { Icon } from './Icon'
 
 const TOKEN_CLASSES: Record<QuickAddTokenKind, string> = {
-  kind: 'bg-butter text-butter-ink',
-  area: 'bg-sky text-blue-deep',
+  kind: 'bg-peach text-peach-ink',
+  area: 'bg-mint text-moss-deep',
   unknownArea: 'bg-alert-soft text-alert',
   priority: 'bg-alert-soft text-alert',
-  date: 'bg-sky text-blue-deep',
-  time: 'bg-sky text-blue-deep',
-  recurrence: 'bg-sky text-blue-deep',
-  duration: 'bg-cream text-navy-soft',
+  date: 'bg-mint text-moss-deep',
+  time: 'bg-mint text-moss-deep',
+  recurrence: 'bg-mint text-moss-deep',
+  duration: 'bg-canvas text-ink-soft',
 }
 
 const SYNTAX_HELP: Array<[string, string]> = [
@@ -67,9 +67,9 @@ export function QuickAdd() {
     <div className="relative">
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2 rounded-full border border-line bg-card py-1.5 pr-1.5 pl-4 focus-within:border-blue"
+        className="flex items-center gap-2 rounded-full border border-line bg-card py-1.5 pr-1.5 pl-4 focus-within:border-moss"
       >
-        <Icon name="plus" className="text-navy-faint" />
+        <Icon name="plus" className="text-ink-faint" />
         <input
           ref={inputRef}
           value={text}
@@ -77,7 +77,7 @@ export function QuickAdd() {
           placeholder="Ex.: pagar luz sexta 10h #casa"
           aria-label="Adicionar rapidamente"
           enterKeyHint="done"
-          className="min-w-0 flex-1 bg-transparent py-1 text-[15px] outline-none placeholder:text-navy-faint"
+          className="min-w-0 flex-1 bg-transparent py-1 text-[15px] outline-none placeholder:text-ink-faint"
         />
         <button
           type="button"
@@ -95,7 +95,7 @@ export function QuickAdd() {
 
       {parsed && (parsed.tokens.length > 0 || parsed.title) && (
         <div className="mt-2 flex flex-wrap items-center gap-1.5 px-2 text-xs">
-          <span className="font-semibold text-navy">{parsed.title || 'Sem título ainda'}</span>
+          <span className="font-semibold text-ink">{parsed.title || 'Sem título ainda'}</span>
           {parsed.tokens.map((token) => (
             <span key={token.kind + token.label} className={`chip ${TOKEN_CLASSES[token.kind]}`}>
               {token.label}
@@ -110,12 +110,12 @@ export function QuickAdd() {
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
             {SYNTAX_HELP.map(([example, meaning]) => (
               <div key={example} className="contents">
-                <dt className="font-semibold text-blue-deep">{example}</dt>
-                <dd className="text-navy-soft">{meaning}</dd>
+                <dt className="font-semibold text-moss-deep">{example}</dt>
+                <dd className="text-ink-soft">{meaning}</dd>
               </div>
             ))}
           </dl>
-          <p className="mt-3 text-xs text-navy-faint">Dica: aperte / em qualquer tela para começar a digitar.</p>
+          <p className="mt-3 text-xs text-ink-faint">Dica: aperte / em qualquer tela para começar a digitar.</p>
         </div>
       )}
     </div>

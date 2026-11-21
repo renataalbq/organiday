@@ -59,7 +59,7 @@ function WorkdaySettings() {
   return (
     <form onSubmit={handleSubmit} className="rounded-[var(--radius-card)] border border-line bg-card p-4 sm:p-5">
       <h2 className="mb-1 font-display text-[17px] font-bold">Você e seu expediente</h2>
-      <p className="mb-4 text-sm text-navy-soft">
+      <p className="mb-4 text-sm text-ink-soft">
         Usado para calcular quanto tempo livre sobra entre as reuniões em dias úteis.
       </p>
       <div className="grid max-w-xl grid-cols-2 gap-3">
@@ -97,7 +97,7 @@ function WorkdaySettings() {
             type="checkbox"
             checked={hasLunch}
             onChange={(event) => setHasLunch(event.target.checked)}
-            className="size-4 accent-[var(--color-blue-deep)]"
+            className="size-4 accent-[var(--color-moss-deep)]"
           />
           Descontar almoço
         </label>
@@ -128,7 +128,7 @@ function WorkdaySettings() {
         <button type="submit" className="button-primary" disabled={saveSettings.isPending}>
           Salvar ajustes
         </button>
-        {message && <span className="text-sm text-navy-soft">{message}</span>}
+        {message && <span className="text-sm text-ink-soft">{message}</span>}
       </div>
     </form>
   )
@@ -154,7 +154,7 @@ function AreasSettings() {
   return (
     <section className="rounded-[var(--radius-card)] border border-line bg-card p-4 sm:p-5">
       <h2 className="mb-1 font-display text-[17px] font-bold">Áreas</h2>
-      <p className="mb-3 text-sm text-navy-soft">
+      <p className="mb-3 text-sm text-ink-soft">
         Áreas marcadas como trabalho entram na conta do expediente e ganham peso em dias úteis. Ao excluir uma área, as
         tarefas dela vão pra Inbox.
       </p>
@@ -201,7 +201,7 @@ function AreaRow({ area }: { area: Area }) {
             aria-checked={area.color.toLowerCase() === color.toLowerCase()}
             aria-label={color}
             onClick={() => updateArea.mutate({ id: area.id, changes: { color } })}
-            className={`size-5 rounded-full ${area.color.toLowerCase() === color.toLowerCase() ? 'ring-2 ring-navy ring-offset-2 ring-offset-card' : ''}`}
+            className={`size-5 rounded-full ${area.color.toLowerCase() === color.toLowerCase() ? 'ring-2 ring-ink ring-offset-2 ring-offset-card' : ''}`}
             style={{ backgroundColor: color }}
           />
         ))}
@@ -214,14 +214,14 @@ function AreaRow({ area }: { area: Area }) {
         onKeyDown={(event) => event.key === 'Enter' && (event.target as HTMLInputElement).blur()}
         aria-label="Nome da área"
       />
-      <label className="flex items-center gap-1.5 text-sm text-navy-soft">
+      <label className="flex items-center gap-1.5 text-sm text-ink-soft">
         <input
           type="checkbox"
           checked={area.kind === 'work'}
           onChange={(event) =>
             updateArea.mutate({ id: area.id, changes: { kind: event.target.checked ? 'work' : 'life' } })
           }
-          className="size-4 accent-[var(--color-blue-deep)]"
+          className="size-4 accent-[var(--color-moss-deep)]"
         />
         é trabalho
       </label>
@@ -231,7 +231,7 @@ function AreaRow({ area }: { area: Area }) {
           if (window.confirm(`Excluir a área "${area.name}"? As tarefas dela vão pra Inbox.`))
             deleteArea.mutate(area.id)
         }}
-        className="button-quiet p-2 text-navy-faint hover:text-alert"
+        className="button-quiet p-2 text-ink-faint hover:text-alert"
         aria-label={`Excluir ${area.name}`}
       >
         <Icon name="trash" size={16} />

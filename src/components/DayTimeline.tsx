@@ -48,7 +48,7 @@ export function DayTimeline({ budget, nowMinute, onMeetingClick }: DayTimelinePr
               type="button"
               onClick={() => segment.taskId && onMeetingClick?.(segment.taskId)}
               title={`${segment.label}, ${minutesToClock(segment.startMinute)}–${minutesToClock(segment.endMinute)}`}
-              className="absolute inset-y-1.5 overflow-hidden rounded-md bg-butter px-1.5 text-left text-[11px] leading-[32px] font-semibold whitespace-nowrap text-butter-ink ring-1 ring-blue/40 hover:bg-butter-deep"
+              className="absolute inset-y-1.5 overflow-hidden rounded-md bg-peach px-1.5 text-left text-[11px] leading-[32px] font-semibold whitespace-nowrap text-peach-ink ring-1 ring-moss/40 hover:bg-peach-deep"
               style={{
                 left: toPercent(segment.startMinute),
                 width: widthPercent(segment.startMinute, segment.endMinute),
@@ -66,7 +66,7 @@ export function DayTimeline({ budget, nowMinute, onMeetingClick }: DayTimelinePr
         )}
       </div>
 
-      <div className="relative mt-1.5 h-4 text-[11px] font-medium text-blue-ink/75">
+      <div className="relative mt-1.5 h-4 text-[11px] font-medium text-moss-ink/75">
         {hours.map((minute, index) =>
           index % labelEvery === 0 ? (
             <span

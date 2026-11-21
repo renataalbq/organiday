@@ -39,7 +39,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex min-w-0 flex-1 flex-col bg-paper">
           <div className="sticky top-0 z-20 border-b border-line/60 bg-paper/95 px-4 pt-[max(.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur sm:px-6 lg:static lg:border-0 lg:bg-transparent lg:pt-5 lg:backdrop-blur-none">
             <div className="mb-3 flex items-center justify-between lg:hidden">
-              <span className="font-display text-2xl font-extrabold tracking-tight text-blue-deep">{APP_NAME}</span>
+              <span className="font-display text-2xl font-extrabold tracking-tight text-moss-deep">{APP_NAME}</span>
               <NavLink to="/ajustes" className="button-quiet p-2" aria-label="Ajustes">
                 <Icon name="settings" />
               </NavLink>
@@ -65,12 +65,12 @@ function Sidebar({ items }: { items: NavItem[] }) {
   const activeAreaId = location.pathname === '/tarefas' ? searchParams.get('area') : null
 
   return (
-    <aside className="hidden w-60 shrink-0 flex-col bg-blue px-4 py-6 text-blue-ink lg:flex">
+    <aside className="hidden w-60 shrink-0 flex-col bg-moss px-4 py-6 text-moss-ink lg:flex">
       <div className="mb-8 px-2">
         <p className="font-display text-[2rem] leading-none font-extrabold tracking-tight">{APP_NAME}</p>
       </div>
 
-      <p className="eyebrow mb-2 px-2 text-blue-ink/60">Geral</p>
+      <p className="eyebrow mb-2 px-2 text-moss-ink/60">Geral</p>
       <nav className="space-y-0.5">
         {items.map((item) => (
           <SidebarLink
@@ -83,17 +83,17 @@ function Sidebar({ items }: { items: NavItem[] }) {
 
       {areas.length > 0 && (
         <>
-          <p className="eyebrow mt-7 mb-2 px-2 text-blue-ink/60">Áreas</p>
+          <p className="eyebrow mt-7 mb-2 px-2 text-moss-ink/60">Áreas</p>
           <nav className="space-y-0.5">
             {areas.map((area) => (
               <NavLink
                 key={area.id}
                 to={`/tarefas?area=${area.id}`}
                 className={`flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-medium transition-colors ${
-                  activeAreaId === area.id ? 'bg-butter-deep text-navy' : 'hover:bg-white/10'
+                  activeAreaId === area.id ? 'bg-paper text-ink' : 'hover:bg-white/10'
                 }`}
               >
-                <span className="size-3 rounded-[4px] ring-2 ring-white/70" style={{ backgroundColor: area.color }} />
+                <span className="size-2.5 rounded-full ring-2 ring-white/80" style={{ backgroundColor: area.color }} />
                 {area.name}
               </NavLink>
             ))}
@@ -115,14 +115,14 @@ function SidebarLink({ to, label, icon, count, isActive }: NavItem & { isActive?
       end={to === '/'}
       className={({ isActive: routeActive }) =>
         `flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm font-semibold transition-colors ${
-          (isActive ?? routeActive) ? 'bg-butter-deep text-navy' : 'hover:bg-white/10'
+          (isActive ?? routeActive) ? 'bg-paper text-ink' : 'hover:bg-white/10'
         }`
       }
     >
       <Icon name={icon} size={17} />
       <span className="flex-1">{label}</span>
       {count !== undefined && count > 0 && (
-        <span className="grid min-w-5 place-items-center rounded-full bg-butter px-1.5 text-[11px] font-bold text-butter-ink">
+        <span className="grid min-w-5 place-items-center rounded-full bg-peach-deep px-1.5 text-[11px] font-bold text-peach-ink">
           {count}
         </span>
       )}
@@ -140,13 +140,13 @@ function MobileTabBar({ items }: { items: NavItem[] }) {
             to={item.to}
             end={item.to === '/'}
             className={({ isActive }) =>
-              `relative flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold ${isActive ? 'text-blue-deep' : 'text-navy-faint'}`
+              `relative flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold ${isActive ? 'text-moss-deep' : 'text-ink-faint'}`
             }
           >
             <Icon name={item.icon} size={21} />
             {item.label}
             {item.count !== undefined && item.count > 0 && item.to === '/inbox' && (
-              <span className="absolute top-1.5 left-1/2 ml-2 grid min-w-4 place-items-center rounded-full bg-butter-deep px-1 text-[10px] text-navy">
+              <span className="absolute top-1.5 left-1/2 ml-2 grid min-w-4 place-items-center rounded-full bg-peach-deep px-1 text-[10px] text-ink">
                 {item.count}
               </span>
             )}

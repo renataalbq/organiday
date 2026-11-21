@@ -127,13 +127,13 @@ function TaskEditorDialog({ target, onClose }: { target: EditorTarget; onClose: 
   return (
     <Sheet label={target.mode === 'edit' ? 'Editar item' : 'Novo item'} onClose={onClose} onSubmit={handleSubmit}>
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex gap-1 rounded-full bg-cream p-1">
+        <div className="flex gap-1 rounded-full bg-canvas p-1">
           {(Object.keys(KIND_LABEL) as TaskKind[]).map((kind) => (
             <button
               key={kind}
               type="button"
               onClick={() => set('kind', kind)}
-              className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${draft.kind === kind ? 'bg-card text-navy shadow-sm' : 'text-navy-soft'}`}
+              className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${draft.kind === kind ? 'bg-card text-ink shadow-sm' : 'text-ink-soft'}`}
             >
               {KIND_LABEL[kind]}
             </button>
@@ -155,7 +155,7 @@ function TaskEditorDialog({ target, onClose }: { target: EditorTarget; onClose: 
               ? 'Nome da reunião'
               : 'O que precisa ser feito?'
         }
-        className="mb-4 w-full bg-transparent font-display text-2xl font-bold tracking-tight outline-none placeholder:text-navy-faint"
+        className="mb-4 w-full bg-transparent font-display text-2xl font-bold tracking-tight outline-none placeholder:text-ink-faint"
       />
 
       <div className="grid grid-cols-2 gap-3">

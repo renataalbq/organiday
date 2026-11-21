@@ -2,9 +2,9 @@ import type { ReactNode } from 'react'
 
 const TONE_CLASSES = {
   plain: 'bg-card border border-line',
-  butter: 'bg-butter',
-  sky: 'bg-sky',
-  blue: 'bg-blue text-blue-ink',
+  peach: 'bg-peach',
+  mint: 'bg-mint',
+  moss: 'bg-moss text-moss-ink',
 } as const
 
 interface CardProps {

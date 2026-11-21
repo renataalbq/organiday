@@ -6,8 +6,8 @@ Painel pessoal para organizar trabalho, casa, estudos e o dia a dia. Funciona no
 
 ## O que tem
 
-- **Hoje:** saudação, seu dia de trabalho (tempo livre até o fim do expediente, linha do tempo com reuniões e almoço, e se as tarefas de trabalho cabem), reuniões de hoje, decisões a tomar, atenção agora, estudos em andamento e foco do dia.
-- **Tarefas:** tudo agrupado em atrasadas, hoje, próximas e sem data, ordenado pela priorização automática. Dá pra filtrar por área e por tipo (tarefas, decisões, reuniões). O alfinete fixa uma tarefa no foco de hoje.
+- **Hoje:** saudação, seu expediente (tempo livre até o fim do expediente, linha do tempo com reuniões e almoço, e se as tarefas de trabalho cabem), agenda de reuniões, pra decidir, fica de olho, aprendendo (estudos em andamento), prioridades de hoje e no radar.
+- **Tarefas:** tudo agrupado em atrasadas, hoje, próximas e sem data, ordenado pela priorização automática. Dá pra filtrar por área e por tipo (tarefas, decisões, reuniões). O alfinete fixa uma tarefa nas prioridades de hoje.
 - **Inbox:** o que entrou sem área. Um toque na bolinha colorida move o item pra área certa.
 - **Estudos:** cursos e livros com progresso (+1 aula), prazo e ritmo necessário por semana.
 - **Ajustes:** seu nome, horário de expediente e almoço, e as áreas (cor, nome, se é trabalho).
@@ -31,7 +31,7 @@ Exemplos: `daily dias úteis 9h30 ~15m #trab`, `pagar condomínio todo dia 10 #c
 
 ### Priorização automática
 
-Cada tarefa recebe uma nota (`src/lib/priority/scoreTask.ts`) somando prioridade, urgência do prazo (atrasadas pesam mais), contexto (trabalho sobe em dia útil, vida pessoal no fim de semana) e há quanto tempo está parada. O Foco do dia mostra as 3 maiores, e as fixadas com o alfinete vêm sempre primeiro.
+Cada tarefa recebe uma nota (`src/lib/priority/scoreTask.ts`) somando prioridade, urgência do prazo (atrasadas pesam mais), contexto (trabalho sobe em dia útil, vida pessoal no fim de semana) e há quanto tempo está parada. As Prioridades de hoje mostram as 3 maiores, e as fixadas com o alfinete vêm sempre primeiro.
 
 ## Rodando
 

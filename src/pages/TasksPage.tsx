@@ -93,7 +93,7 @@ export function TasksPage({ inboxOnly = false }: { inboxOnly?: boolean }) {
             {selectedArea && <span className="size-4 rounded-full" style={{ backgroundColor: selectedArea.color }} />}
             {title}
           </h1>
-          <p className="text-sm text-navy-soft">
+          <p className="text-sm text-ink-soft">
             {inboxOnly ? 'O que entrou sem área. Dê um destino pra cada item.' : `${openCount} em aberto`}
           </p>
         </div>
@@ -113,7 +113,7 @@ export function TasksPage({ inboxOnly = false }: { inboxOnly?: boolean }) {
               key={tab.kind}
               type="button"
               onClick={() => setParam('tipo', tab.kind === 'task' ? null : tab.kind)}
-              className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${kind === tab.kind ? 'bg-card text-navy shadow-sm' : 'text-navy-soft hover:text-navy'}`}
+              className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${kind === tab.kind ? 'bg-card text-ink shadow-sm' : 'text-ink-soft hover:text-ink'}`}
             >
               {tab.label}
             </button>
@@ -137,9 +137,9 @@ export function TasksPage({ inboxOnly = false }: { inboxOnly?: boolean }) {
 
       <section className="rounded-[var(--radius-card)] border border-line bg-card px-4 py-2 sm:px-5">
         {isLoading ? (
-          <p className="py-6 text-navy-soft">Carregando…</p>
+          <p className="py-6 text-ink-soft">Carregando…</p>
         ) : groups.length === 0 ? (
-          <p className="py-6 text-sm text-navy-soft">
+          <p className="py-6 text-sm text-ink-soft">
             {inboxOnly ? 'Inbox vazia. Tudo tem lugar.' : 'Nada em aberto aqui. Use o campo de adicionar lá em cima.'}
           </p>
         ) : (
@@ -202,7 +202,7 @@ function AreaFilterChip({
       onClick={onClick}
       aria-pressed={isActive}
       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold transition-colors ${
-        isActive ? 'border-navy bg-navy text-white' : 'border-line bg-card text-navy-soft hover:border-navy-faint'
+        isActive ? 'border-ink bg-ink text-white' : 'border-line bg-card text-ink-soft hover:border-ink-faint'
       }`}
     >
       {color && <span className="size-2 rounded-full" style={{ backgroundColor: color }} />}
