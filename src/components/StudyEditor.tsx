@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useCreateStudy, useDeleteStudy, useUpdateStudy } from '../data/studies'
 import type { Study, StudyStatus } from '../types'
 import { Icon } from './Icon'
+import { prefersAutoFocus } from '../lib/device'
 import { Sheet } from './Sheet'
 
 const STATUS_LABEL: Record<StudyStatus, string> = { active: 'Estudando', paused: 'Pausado', done: 'Concluído' }
@@ -52,19 +53,58 @@ export function StudyEditor({ study, onClose }: StudyEditorProps) {
   }
 
   return (
-    <Sheet label={study ? 'Editar estudo' : 'Novo estudo'} onClose={onClose} onSubmit={handleSubmit}>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-display text-lg font-bold">{study ? 'Editar estudo' : 'Novo estudo'}</h2>
-        <button type="button" onClick={onClose} className="button-quiet p-2" aria-label="Fechar">
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet
+      label={study ? 'Editar estudo' : 'Novo estudo'}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      header={
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold">{study ? 'Editar estudo' : 'Novo estudo'}</h2>
+          <button type="button" onClick={onClose} className="button-quiet p-2" aria-label="Fechar">
+            <Icon name="close" />
+          </button>
+        </div>
+      }
+      footer={
+        <>
+          {error && <p className="mb-2 text-sm font-semibold text-alert">{error}</p>}
 
-      <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center justify-between gap-2">
+            {study ? (
+              <button
+                type="button"
+                onClick={() => {
+                  deleteStudy.mutate(study.id)
+                  onClose()
+                }}
+                className="button-quiet text-alert hover:text-alert"
+              >
+                <Icon name="trash" size={16} /> Excluir
+              </button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-2">
+              <button type="button" onClick={onClose} className="button-quiet">
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="button-primary"
+                disabled={createStudy.isPending || updateStudy.isPending}
+              >
+                {study ? 'Salvar' : 'Criar'}
+              </button>
+            </div>
+          </div>
+        </>
+      }
+    >
+      <div className="grid grid-cols-2 gap-3 [&>label]:min-w-0">
         <label className="col-span-2">
           <span className="label">O que você está estudando</span>
           <input
-            autoFocus
+            autoFocus={!study && prefersAutoFocus()}
             className="field"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
@@ -142,33 +182,6 @@ export function StudyEditor({ study, onClose }: StudyEditorProps) {
           />
         </label>
       </div>
-
-      {error && <p className="mt-3 text-sm font-semibold text-alert">{error}</p>}
-
-      <footer className="mt-5 flex items-center justify-between">
-        {study ? (
-          <button
-            type="button"
-            onClick={() => {
-              deleteStudy.mutate(study.id)
-              onClose()
-            }}
-            className="button-quiet text-alert hover:text-alert"
-          >
-            <Icon name="trash" size={16} /> Excluir
-          </button>
-        ) : (
-          <span />
-        )}
-        <div className="flex gap-2">
-          <button type="button" onClick={onClose} className="button-quiet">
-            Cancelar
-          </button>
-          <button type="submit" className="button-primary" disabled={createStudy.isPending || updateStudy.isPending}>
-            {study ? 'Salvar' : 'Criar'}
-          </button>
-        </div>
-      </footer>
     </Sheet>
   )
 }
