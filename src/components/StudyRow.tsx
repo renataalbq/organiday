@@ -59,7 +59,7 @@ export function StudyRow({ study, onOpen }: StudyRowProps) {
           aria-label={study.title}
         >
           <div
-            className="h-full rounded-full bg-moss transition-[width] duration-300"
+            className="h-full rounded-full bg-lilac-deep transition-[width] duration-300"
             style={{ width: `${percent}%` }}
           />
         </div>
@@ -78,7 +78,7 @@ export function StudyRow({ study, onOpen }: StudyRowProps) {
         <button
           type="button"
           onClick={() => step(1)}
-          className="grid size-8 place-items-center rounded-full bg-mint text-moss-deep hover:bg-mint-deep"
+          className="grid size-8 place-items-center rounded-full bg-mint text-lilac-deep hover:bg-mint-deep"
           aria-label={`Avançar 1 em ${study.title}`}
           disabled={study.progress === study.total}
         >

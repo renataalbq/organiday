@@ -7,12 +7,12 @@ import { Icon } from './Icon'
 
 const TOKEN_CLASSES: Record<QuickAddTokenKind, string> = {
   kind: 'bg-peach text-peach-ink',
-  area: 'bg-mint text-moss-deep',
+  area: 'bg-mint text-lilac-deep',
   unknownArea: 'bg-alert-soft text-alert',
   priority: 'bg-alert-soft text-alert',
-  date: 'bg-mint text-moss-deep',
-  time: 'bg-mint text-moss-deep',
-  recurrence: 'bg-mint text-moss-deep',
+  date: 'bg-mint text-lilac-deep',
+  time: 'bg-mint text-lilac-deep',
+  recurrence: 'bg-mint text-lilac-deep',
   duration: 'bg-canvas text-ink-soft',
 }
 
@@ -67,7 +67,7 @@ export function QuickAdd() {
     <div className="relative">
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2 rounded-full border border-line bg-card py-1.5 pr-1.5 pl-4 focus-within:border-moss"
+        className="flex items-center gap-2 rounded-full border border-line bg-card py-1.5 pr-1.5 pl-4 focus-within:border-lilac"
       >
         <Icon name="plus" className="text-ink-faint" />
         <input
@@ -110,7 +110,7 @@ export function QuickAdd() {
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
             {SYNTAX_HELP.map(([example, meaning]) => (
               <div key={example} className="contents">
-                <dt className="font-semibold text-moss-deep">{example}</dt>
+                <dt className="font-semibold text-lilac-deep">{example}</dt>
                 <dd className="text-ink-soft">{meaning}</dd>
               </div>
             ))}

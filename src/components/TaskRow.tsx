@@ -45,7 +45,7 @@ export function TaskRow({ task, area, reasons, showDate = true, isPinned = false
         </span>
         <span className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-soft">
           {isPinned && (
-            <span className="inline-flex items-center gap-0.5 font-semibold text-moss-deep">
+            <span className="inline-flex items-center gap-0.5 font-semibold text-lilac-deep">
               <Icon name="pin" size={12} /> fixada
             </span>
           )}

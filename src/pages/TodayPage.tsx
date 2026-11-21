@@ -40,7 +40,7 @@ export function TodayPage() {
     <div className="space-y-4">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="eyebrow text-moss-deep">
+          <p className="eyebrow text-lilac-deep">
             {weekday}, {date}
           </p>
           <h1 className="font-display text-[2rem] leading-tight font-extrabold tracking-tight sm:text-[2.5rem]">
@@ -138,7 +138,7 @@ export function TodayPage() {
           {board.focus.length === 0 ? (
             <p className="text-sm text-ink-soft">Sem tarefas abertas. Adicione uma no campo lá em cima.</p>
           ) : (
-            <div className="divide-y divide-moss/10">
+            <div className="divide-y divide-ink/10">
               {board.focus.map(({ task, reasons, isPinned }) => (
                 <TaskRow
                   key={task.id}
@@ -221,7 +221,7 @@ function DayCard({
   const slack = budget.freeFromNowMinutes - budget.plannedMinutes
 
   return (
-    <Card title="Seu expediente" tone="moss" className="lg:col-span-8">
+    <Card title="Seu expediente" tone="lilac" className="lg:col-span-8">
       {budget.isWorkday ? (
         <>
           <div className="mb-4 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
@@ -229,7 +229,7 @@ function DayCard({
               <p className="font-display text-5xl leading-none font-extrabold tracking-tight">
                 {formatDuration(hasEnded ? 0 : budget.freeFromNowMinutes)}
               </p>
-              <p className="mt-1.5 text-sm text-moss-ink/85">
+              <p className="mt-1.5 text-sm text-lilac-ink/85">
                 {hasEnded
                   ? 'Expediente encerrado por hoje.'
                   : `livres até as ${minutesToClock(budget.workdayEnd)}, fora reuniões e almoço`}
@@ -237,15 +237,15 @@ function DayCard({
             </div>
             <dl className="flex gap-5 text-sm">
               <div>
-                <dt className="text-moss-ink/70">Expediente</dt>
+                <dt className="text-lilac-ink/70">Expediente</dt>
                 <dd className="font-display text-lg font-bold">{formatDuration(budget.workMinutes)}</dd>
               </div>
               <div>
-                <dt className="text-moss-ink/70">Em reuniões</dt>
+                <dt className="text-lilac-ink/70">Em reuniões</dt>
                 <dd className="font-display text-lg font-bold">{formatDuration(budget.meetingMinutes)}</dd>
               </div>
               <div>
-                <dt className="text-moss-ink/70">Tarefas</dt>
+                <dt className="text-lilac-ink/70">Tarefas</dt>
                 <dd className="font-display text-lg font-bold">{formatDuration(budget.plannedMinutes)}</dd>
               </div>
             </dl>
@@ -255,7 +255,7 @@ function DayCard({
 
           {!hasEnded && budget.plannedMinutes > 0 && (
             <p
-              className={`mt-3 rounded-xl px-3 py-2 text-sm font-medium ${fits ? 'bg-white/15' : 'bg-peach text-peach-ink'}`}
+              className={`mt-3 rounded-xl px-3 py-2 text-sm font-medium ${fits ? 'bg-white/55' : 'bg-peach text-peach-ink'}`}
             >
               {fits
                 ? `Suas tarefas de trabalho cabem no dia, com ${formatDuration(slack)} de folga.`
@@ -268,7 +268,7 @@ function DayCard({
       ) : (
         <div>
           <p className="font-display text-4xl leading-none font-extrabold tracking-tight">Fim de semana</p>
-          <p className="mt-2 text-sm text-moss-ink/85">
+          <p className="mt-2 text-sm text-lilac-ink/85">
             Sem expediente hoje. As prioridades puxam mais as coisas de casa e pessoais.
           </p>
           {budget.segments.length > 0 && (
@@ -384,7 +384,7 @@ function StudiesCard() {
         <button
           type="button"
           onClick={() => setEditing('new')}
-          className="w-full rounded-xl border border-dashed border-line p-4 text-left text-sm text-ink-soft hover:border-moss"
+          className="w-full rounded-xl border border-dashed border-line p-4 text-left text-sm text-ink-soft hover:border-lilac"
         >
           Nenhum estudo em andamento. Cadastre um curso, livro ou certificação para acompanhar o progresso.
         </button>

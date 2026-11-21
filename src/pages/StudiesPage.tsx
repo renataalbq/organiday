@@ -31,7 +31,7 @@ export function StudiesPage() {
         <button
           type="button"
           onClick={() => setEditing('new')}
-          className="w-full rounded-[var(--radius-card)] border border-dashed border-line bg-card p-6 text-left text-ink-soft hover:border-moss"
+          className="w-full rounded-[var(--radius-card)] border border-dashed border-line bg-card p-6 text-left text-ink-soft hover:border-lilac"
         >
           Nada por aqui ainda. Cadastre o que você está estudando para ver o progresso e quanto falta por semana.
         </button>

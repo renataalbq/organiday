@@ -97,7 +97,7 @@ function WorkdaySettings() {
             type="checkbox"
             checked={hasLunch}
             onChange={(event) => setHasLunch(event.target.checked)}
-            className="size-4 accent-[var(--color-moss-deep)]"
+            className="size-4 accent-[var(--color-lilac-deep)]"
           />
           Descontar almoço
         </label>
@@ -221,7 +221,7 @@ function AreaRow({ area }: { area: Area }) {
           onChange={(event) =>
             updateArea.mutate({ id: area.id, changes: { kind: event.target.checked ? 'work' : 'life' } })
           }
-          className="size-4 accent-[var(--color-moss-deep)]"
+          className="size-4 accent-[var(--color-lilac-deep)]"
         />
         é trabalho
       </label>

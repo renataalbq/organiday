@@ -15,7 +15,7 @@ export function PinButton({ task }: { task: Task }) {
       onClick={() => updateTask.mutate({ id: task.id, changes: { focus_date: isPinned ? null : todayISO } })}
       className={`grid size-8 shrink-0 place-items-center rounded-full transition-colors ${
         isPinned
-          ? 'bg-moss-deep text-white'
+          ? 'bg-lilac-deep text-white'
           : 'text-ink-faint opacity-100 hover:bg-black/5 hover:text-ink sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100'
       }`}
       aria-label={isPinned ? `Tirar "${task.title}" das prioridades` : `Fixar "${task.title}" nas prioridades de hoje`}

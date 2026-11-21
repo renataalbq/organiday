@@ -20,10 +20,10 @@ export function DayTimeline({ budget, nowMinute, onMeetingClick }: DayTimelinePr
 
   return (
     <div>
-      <div className="relative h-11 overflow-hidden rounded-xl bg-white/12">
+      <div className="relative h-11 overflow-hidden rounded-xl bg-white/35">
         {budget.isWorkday && (
           <div
-            className="absolute inset-y-0 bg-white/18"
+            className="absolute inset-y-0 bg-white/65"
             style={{
               left: toPercent(budget.workdayStart),
               width: widthPercent(budget.workdayStart, budget.workdayEnd),
@@ -36,7 +36,7 @@ export function DayTimeline({ budget, nowMinute, onMeetingClick }: DayTimelinePr
             <div
               key="lunch"
               title="Almoço"
-              className="absolute inset-y-0 bg-[repeating-linear-gradient(135deg,rgba(255,255,255,.16)_0_4px,transparent_4px_9px)]"
+              className="absolute inset-y-0 bg-[repeating-linear-gradient(135deg,rgba(43,33,82,.10)_0_4px,transparent_4px_9px)]"
               style={{
                 left: toPercent(segment.startMinute),
                 width: widthPercent(segment.startMinute, segment.endMinute),
@@ -48,7 +48,7 @@ export function DayTimeline({ budget, nowMinute, onMeetingClick }: DayTimelinePr
               type="button"
               onClick={() => segment.taskId && onMeetingClick?.(segment.taskId)}
               title={`${segment.label}, ${minutesToClock(segment.startMinute)}–${minutesToClock(segment.endMinute)}`}
-              className="absolute inset-y-1.5 overflow-hidden rounded-md bg-peach px-1.5 text-left text-[11px] leading-[32px] font-semibold whitespace-nowrap text-peach-ink ring-1 ring-moss/40 hover:bg-peach-deep"
+              className="absolute inset-y-1.5 overflow-hidden rounded-md bg-peach px-1.5 text-left text-[11px] leading-[32px] font-semibold whitespace-nowrap text-peach-ink ring-1 ring-lilac-ink/15 hover:bg-peach-deep"
               style={{
                 left: toPercent(segment.startMinute),
                 width: widthPercent(segment.startMinute, segment.endMinute),
@@ -60,13 +60,13 @@ export function DayTimeline({ budget, nowMinute, onMeetingClick }: DayTimelinePr
         )}
 
         {showNow && (
-          <div className="absolute inset-y-0 w-0.5 bg-white" style={{ left: toPercent(nowMinute) }}>
-            <span className="absolute -top-0.5 -left-[3px] size-2 rounded-full bg-white" />
+          <div className="absolute inset-y-0 w-0.5 bg-lilac-ink" style={{ left: toPercent(nowMinute) }}>
+            <span className="absolute -top-0.5 -left-[3px] size-2 rounded-full bg-lilac-ink" />
           </div>
         )}
       </div>
 
-      <div className="relative mt-1.5 h-4 text-[11px] font-medium text-moss-ink/75">
+      <div className="relative mt-1.5 h-4 text-[11px] font-medium text-lilac-ink/75">
         {hours.map((minute, index) =>
           index % labelEvery === 0 ? (
             <span

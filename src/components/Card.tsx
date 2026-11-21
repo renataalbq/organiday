@@ -4,7 +4,7 @@ const TONE_CLASSES = {
   plain: 'bg-card border border-line',
   peach: 'bg-peach',
   mint: 'bg-mint',
-  moss: 'bg-moss text-moss-ink',
+  lilac: 'bg-lilac text-lilac-ink',
 } as const
 
 interface CardProps {

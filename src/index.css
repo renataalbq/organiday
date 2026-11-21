@@ -4,18 +4,18 @@
   --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #e7eae0;
-  --color-paper: #f4f5ef;
-  --color-card: #fdfdf9;
-  --color-line: #dde2d4;
+  --color-canvas: #ece9f3;
+  --color-paper: #f7f6fb;
+  --color-card: #fefdff;
+  --color-line: #e3dfec;
 
-  --color-ink: #1d2b25;
-  --color-ink-soft: #57665e;
-  --color-ink-faint: #8f9b94;
+  --color-ink: #251f3a;
+  --color-ink-soft: #615b78;
+  --color-ink-faint: #9b96ae;
 
-  --color-moss: #2e5b4e;
-  --color-moss-deep: #234539;
-  --color-moss-ink: #eef5f0;
+  --color-lilac: #d8cef6;
+  --color-lilac-deep: #6a52c4;
+  --color-lilac-ink: #2b2152;
   --color-mint: #d5eadc;
   --color-mint-deep: #bcdcc8;
 
@@ -44,7 +44,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-moss-deep);
+    outline: 2px solid var(--color-lilac-deep);
     outline-offset: 2px;
   }
 
@@ -67,7 +67,7 @@
 
 @layer components {
   .field {
-    @apply w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[15px] outline-none transition-colors placeholder:text-ink-faint focus:border-moss;
+    @apply w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[15px] outline-none transition-colors placeholder:text-ink-faint focus:border-lilac;
   }
 
   .label {
@@ -75,7 +75,7 @@
   }
 
   .button-primary {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-moss-deep px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-ink disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-lilac-deep px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-ink disabled:opacity-50;
   }
 
   .button-quiet {
