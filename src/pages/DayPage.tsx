@@ -75,7 +75,7 @@ function DayView({ day, todayISO, now }: { day: string; todayISO: string; now: D
   const selectedDate = fromISODate(day)
 
   return (
-    <div className="mx-auto max-w-[1300px] space-y-5">
+    <div className="space-y-5">
       <header className="flex flex-col gap-3 rounded-[var(--radius-card)] border border-line bg-card p-4 sm:p-5 lg:flex-row lg:items-center lg:gap-6">
         <div className="shrink-0">
           <p className="font-display text-xl font-bold tracking-tight">

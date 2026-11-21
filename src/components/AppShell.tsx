@@ -33,8 +33,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   ]
 
   return (
-    <div className="min-h-dvh lg:p-4">
-      <div className="mx-auto flex min-h-dvh max-w-[1400px] overflow-hidden lg:min-h-[calc(100dvh-2rem)] lg:rounded-[1.75rem] lg:shadow-[0_1px_0_rgba(31,55,104,.08)]">
+    <div className="min-h-dvh">
+      <div className="flex min-h-dvh">
         <Sidebar items={mainItems} />
 
         <div className="flex min-w-0 flex-1 flex-col bg-paper">
@@ -66,7 +66,7 @@ function Sidebar({ items }: { items: NavItem[] }) {
   const activeAreaId = location.pathname === '/tarefas' ? searchParams.get('area') : null
 
   return (
-    <aside className="hidden w-60 shrink-0 flex-col bg-lilac px-4 py-6 text-lilac-ink lg:flex">
+    <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col overflow-y-auto bg-lilac px-4 py-6 text-lilac-ink lg:flex">
       <div className="mb-8 px-2">
         <Logo markSize={32} className="text-[1.75rem] leading-none" />
       </div>
