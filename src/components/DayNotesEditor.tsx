@@ -15,10 +15,40 @@ export function DayNotesEditor({ day }: { day: string }) {
   const note = useDayNote(day)
 
   if (note.isPending) return <p className="text-sm text-ink-faint">Carregando nota…</p>
-  if (note.isError) return <p className="text-sm font-semibold text-alert">Não deu pra carregar a nota.</p>
+  if (note.isError) return <NotesUnavailable error={note.error} onRetry={() => void note.refetch()} />
 
   // `key` recria o editor ao trocar de dia, com o conteúdo daquele dia
   return <NotesEditor key={day} day={day} initialContent={note.data} />
+}
+
+/** Erro do PostgREST quando a tabela não existe (migration 0003 não rodou). */
+const isMissingTable = (error: unknown) =>
+  typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'PGRST205'
+
+function NotesUnavailable({ error, onRetry }: { error: unknown; onRetry: () => void }) {
+  if (isMissingTable(error)) {
+    return (
+      <div className="rounded-xl bg-peach/60 p-4 text-sm text-peach-ink">
+        <p className="font-semibold">As notas ainda não estão ativadas no banco.</p>
+        <p className="mt-1">
+          No Supabase, abra <strong>SQL Editor → New query</strong>, cole o conteúdo de{' '}
+          <code className="rounded bg-white/60 px-1">supabase/migrations/0003_day_notes.sql</code> e clique em{' '}
+          <strong>Run</strong>. Depois toque em tentar de novo.
+        </p>
+        <button type="button" onClick={onRetry} className="button-quiet mt-2 -ml-3 text-peach-ink">
+          Tentar de novo
+        </button>
+      </div>
+    )
+  }
+  return (
+    <div className="text-sm">
+      <p className="font-semibold text-alert">Não deu pra carregar a nota.</p>
+      <button type="button" onClick={onRetry} className="button-quiet mt-1 -ml-3">
+        Tentar de novo
+      </button>
+    </div>
+  )
 }
 
 function NotesEditor({ day, initialContent }: { day: string; initialContent: JSONContent | null }) {
