@@ -1,6 +1,6 @@
 import { addDays, toISODate } from '../dates.ts'
 import { timeToMinutes } from '../dayBudget/dayBudget.ts'
-import { rankTasks } from '../priority/scoreTask.ts'
+import { isPlannableOn, rankTasks } from '../priority/scoreTask.ts'
 import type { Area, Task, UserSettings } from '../../types.ts'
 
 const PLAN_SIZE = 3
@@ -77,7 +77,9 @@ export function buildDailySummary({ tasks, areasById, settings, now }: DailySumm
     .sort((a, b) => a.completed_at!.localeCompare(b.completed_at!))
 
   const openWork = tasks.filter((task) => isWorkTask(task) && task.status === 'open')
-  const plan = rankTasks(openWork, areasById, toISODate(planDay), planDay)
+  const planDayISO = toISODate(planDay)
+  const plannable = openWork.filter((task) => isPlannableOn(task, planDayISO))
+  const plan = rankTasks(plannable, areasById, planDayISO, planDay)
     .slice(0, PLAN_SIZE)
     .map((item) => item.task)
   const blockers = openWork.filter((task) => task.kind === 'decision')
