@@ -9,6 +9,8 @@ interface SheetProps {
   /** fica fixo embaixo (botões de ação) */
   footer: ReactNode
   children: ReactNode
+  /** largura no desktop */
+  size?: 'md' | 'lg'
 }
 
 /**
@@ -16,7 +18,7 @@ interface SheetProps {
  * cabeçalho e botões fixos, só o meio rola. No desktop fica centralizado.
  * Fecha com Esc ou clicando fora.
  */
-export function Sheet({ label, onClose, onSubmit, header, footer, children }: SheetProps) {
+export function Sheet({ label, onClose, onSubmit, header, footer, children, size = 'md' }: SheetProps) {
   const panelRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
@@ -54,21 +56,21 @@ export function Sheet({ label, onClose, onSubmit, header, footer, children }: Sh
   }, [])
 
   return (
-    <div className="fixed inset-0 z-50 bg-ink/30 sm:flex sm:items-center sm:justify-center sm:p-6" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-ink/35 sm:flex sm:items-center sm:justify-center sm:p-6" onClick={onClose}>
       <form
         ref={panelRef}
         onSubmit={onSubmit}
         onClick={(event) => event.stopPropagation()}
         aria-label={label}
-        className="fixed inset-x-0 top-[var(--sheet-top,0px)] flex h-[var(--sheet-height,100dvh)] flex-col bg-paper [animation:sheet-in_.2s_ease-out] sm:static sm:h-auto sm:max-h-[88dvh] sm:w-full sm:max-w-lg sm:rounded-[1.5rem] sm:shadow-xl"
+        className={`fixed inset-x-0 top-[var(--sheet-top,0px)] flex h-[var(--sheet-height,100dvh)] flex-col bg-card [animation:sheet-in_.2s_ease-out] sm:static sm:h-auto sm:max-h-[90dvh] sm:w-full sm:rounded-[1.25rem] sm:shadow-[0_24px_60px_-20px_rgba(0,0,0,.35)] ${size === 'lg' ? 'sm:max-w-[680px]' : 'sm:max-w-lg'}`}
       >
-        <header className="shrink-0 border-b border-line/70 px-4 pt-[max(.75rem,env(safe-area-inset-top))] pb-3 sm:border-0 sm:px-5 sm:pt-5 sm:pb-0">
+        <header className="shrink-0 border-b border-line px-4 pt-[max(.75rem,env(safe-area-inset-top))] pb-3 sm:border-0 sm:px-6 sm:pt-6 sm:pb-0">
           {header}
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6">{children}</div>
 
-        <footer className="shrink-0 border-t border-line/70 bg-paper px-4 pt-3 pb-[max(.75rem,env(safe-area-inset-bottom))] sm:rounded-b-[1.5rem] sm:border-0 sm:px-5 sm:pt-1 sm:pb-5">
+        <footer className="shrink-0 border-t border-line bg-paper px-4 pt-3 pb-[max(.75rem,env(safe-area-inset-bottom))] sm:rounded-b-[1.25rem] sm:px-6 sm:py-4">
           {footer}
         </footer>
       </form>

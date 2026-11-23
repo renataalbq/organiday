@@ -32,7 +32,7 @@ function NotesUnavailable({ error, onRetry }: { error: unknown; onRetry: () => v
         <p className="font-semibold">As notas ainda não estão ativadas no banco.</p>
         <p className="mt-1">
           No Supabase, abra <strong>SQL Editor → New query</strong>, cole o conteúdo de{' '}
-          <code className="rounded bg-white/60 px-1">supabase/migrations/0003_day_notes.sql</code> e clique em{' '}
+          <code className="rounded bg-card/60 px-1">supabase/migrations/0003_day_notes.sql</code> e clique em{' '}
           <strong>Run</strong>. Depois toque em tentar de novo.
         </p>
         <button type="button" onClick={onRetry} className="button-quiet mt-2 -ml-3 text-peach-ink">
@@ -171,7 +171,7 @@ function Toolbar({ editor }: { editor: Editor }) {
     <div
       role="toolbar"
       aria-label="Formatação"
-      className="flex flex-wrap items-center gap-0.5 rounded-xl border border-line bg-paper p-1"
+      className="flex flex-wrap items-center gap-0.5 border-b border-line pb-2"
     >
       <TextTool label="Título" text="H2" active={active.h2} onClick={() => chain().toggleHeading({ level: 2 }).run()} />
       <TextTool
@@ -233,7 +233,7 @@ function Divider() {
 
 const toolClass = (active: boolean) =>
   `grid h-8 min-w-8 place-items-center rounded-lg px-1.5 transition-colors ${
-    active ? 'bg-lilac text-lilac-ink' : 'text-ink-soft hover:bg-black/5 hover:text-ink'
+    active ? 'bg-accent-soft text-accent-ink' : 'text-ink hover:bg-hover-strong'
   }`
 
 interface ToolProps {

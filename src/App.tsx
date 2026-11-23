@@ -1,14 +1,16 @@
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { SessionProvider, useSession } from './auth/SessionProvider'
 import { AppShell } from './components/AppShell'
 import { TaskEditorProvider } from './components/TaskEditor'
+import { InboxPage } from './pages/InboxPage'
 import { LoginPage } from './pages/LoginPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { StudiesPage } from './pages/StudiesPage'
 import { TasksPage } from './pages/TasksPage'
 import { TodayPage } from './pages/TodayPage'
+import { useSystemThemeSync } from './hooks/useTheme'
 
 // a tela Dia carrega o editor de notas (Tiptap), que é pesado: só baixa quando abre
 const DayPage = lazy(() => import('./pages/DayPage').then((module) => ({ default: module.DayPage })))
@@ -23,13 +25,15 @@ function AuthenticatedApp() {
   return (
     <TaskEditorProvider>
       <AppShell>
-        <Suspense fallback={<p className="p-8 text-ink-soft">Carregando…</p>}>
+        <Suspense fallback={<p className="p-2 text-ink-soft">Carregando…</p>}>
           <Routes>
             <Route path="/" element={<TodayPage />} />
-            <Route path="/dia" element={<DayPage />} />
-            <Route path="/dia/:date" element={<DayPage />} />
+            <Route path="/semana" element={<DayPage />} />
+            <Route path="/semana/:date" element={<DayPage />} />
+            <Route path="/dia" element={<Navigate to="/semana" replace />} />
+            <Route path="/dia/:date" element={<LegacyDayRedirect />} />
             <Route path="/tarefas" element={<TasksPage />} />
-            <Route path="/inbox" element={<TasksPage inboxOnly />} />
+            <Route path="/inbox" element={<InboxPage />} />
             <Route path="/estudos" element={<StudiesPage />} />
             <Route path="/ajustes" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
@@ -38,6 +42,12 @@ function AuthenticatedApp() {
       </AppShell>
     </TaskEditorProvider>
   )
+}
+
+/** a tela Dia virou Semana: links antigos continuam funcionando */
+function LegacyDayRedirect() {
+  const { date } = useParams()
+  return <Navigate to={`/semana/${date ?? ''}`} replace />
 }
 
 function SessionGate() {
@@ -56,6 +66,8 @@ function SessionGate() {
 }
 
 export default function App() {
+  useSystemThemeSync()
+
   return (
     <QueryClientProvider client={queryClient}>
       <SessionProvider>

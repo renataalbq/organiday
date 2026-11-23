@@ -1,50 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { DailySummary } from '../lib/daily/buildDailySummary'
+import type { Task } from '../types'
 import { Card } from './Card'
 import { Icon } from './Icon'
 
-const storageKey = (summary: DailySummary) => `tidy:daily:${summary.doneDate}:${summary.planLabel}`
-
-function readSavedText(key: string): string | null {
-  try {
-    return localStorage.getItem(key)
-  } catch {
-    return null
-  }
+interface DailySummaryCardProps {
+  summary: DailySummary
+  onOpenTask: (task: Task) => void
+  className?: string
 }
 
-function writeSavedText(key: string, text: string | null) {
-  try {
-    if (text === null) localStorage.removeItem(key)
-    else localStorage.setItem(key, text)
-  } catch {
-    // armazenamento indisponível (aba anônima etc.): a edição só vale até recarregar
-  }
-}
-
-/** Resumo pronto pra falar na daily. Dá pra editar à vontade; a edição fica salva neste aparelho. */
-export function DailySummaryCard({ summary, className = '' }: { summary: DailySummary; className?: string }) {
-  const key = storageKey(summary)
-  const [editedText, setEditedText] = useState<string | null>(() => readSavedText(key))
+/** Já fiz, vou fazer e impedimentos. Fica à mão pra daily, 1:1 ou qualquer reunião. */
+export function DailySummaryCard({ summary, onOpenTask, className = '' }: DailySummaryCardProps) {
   const [copied, setCopied] = useState(false)
-
-  useEffect(() => setEditedText(readSavedText(key)), [key])
-
-  const text = editedText ?? summary.text
-
-  const updateText = (value: string) => {
-    setEditedText(value)
-    writeSavedText(key, value)
-  }
-
-  const resetText = () => {
-    setEditedText(null)
-    writeSavedText(key, null)
-  }
 
   const copyText = async () => {
     try {
-      await navigator.clipboard.writeText(text)
+      await navigator.clipboard.writeText(summary.text)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1800)
     } catch {
@@ -52,35 +24,103 @@ export function DailySummaryCard({ summary, className = '' }: { summary: DailySu
     }
   }
 
+  const impediments = [
+    ...summary.blocked.map((task) => ({ task, text: `${task.title} (${task.blocked_reason})` })),
+    ...summary.blockers.map((task) => ({ task, text: `decidir: ${task.title}` })),
+  ]
+
   return (
     <Card
-      title="Pra daily"
+      title="Resumo do dia"
       className={className}
       action={
-        <div className="-my-2 -mr-2 flex items-center gap-1">
-          {editedText !== null && (
-            <button type="button" onClick={resetText} className="button-quiet" title="Voltar ao texto gerado">
-              Refazer
-            </button>
-          )}
-          <button type="button" onClick={copyText} className="button-quiet text-lilac-deep">
-            <Icon name={copied ? 'check' : 'copy'} size={16} /> {copied ? 'Copiado' : 'Copiar'}
-          </button>
-        </div>
+        <button type="button" onClick={copyText} className="button-outline px-3 py-2 text-[13px]">
+          <Icon name={copied ? 'check' : 'copy'} size={15} /> {copied ? 'Copiado' : 'Copiar'}
+        </button>
       }
     >
-      <p className="mb-2 text-xs text-ink-soft">
-        {summary.doneLabel === 'Hoje'
-          ? `O que você fez hoje e o plano de ${summary.planLabel.toLowerCase()}. Atualiza sozinho conforme você marca tarefas de trabalho.`
-          : `O que você fez ${summary.doneLabel === 'Ontem' ? 'ontem' : `na ${summary.doneLabel.toLowerCase()}`} e o plano de ${summary.planLabel.toLowerCase()}.`}
+      <p className="-mt-2 mb-4 text-xs text-ink-soft">
+        Pra daily ou qualquer reunião. Só tarefas de áreas de trabalho.
       </p>
-      <textarea
-        value={text}
-        onChange={(event) => updateText(event.target.value)}
-        rows={Math.min(Math.max(text.split('\n').length, 6), 14)}
-        aria-label="Texto para a daily"
-        className="w-full resize-none rounded-xl border border-line bg-paper px-3 py-2.5 text-[14px] leading-relaxed outline-none focus:border-lilac-deep"
-      />
+
+      <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+        <Column
+          title={`Já fiz · ${summary.doneLabel}`}
+          tasks={summary.done}
+          empty="nada concluído"
+          onOpen={onOpenTask}
+        />
+        <Column
+          title={`Vou fazer · ${summary.planLabel}`}
+          tasks={summary.plan}
+          empty="nada planejado"
+          onOpen={onOpenTask}
+        />
+      </div>
+
+      <div className="mt-5 border-t border-line pt-4 text-[13px]">
+        {impediments.length === 0 ? (
+          <p className="text-ink-soft">
+            Impedimentos: nenhum.{' '}
+            <span className="text-ink-faint">
+              Marque uma tarefa como bloqueada no formulário pra ela aparecer aqui.
+            </span>
+          </p>
+        ) : (
+          <>
+            <p className="mb-1.5 font-medium text-ink">Impedimentos</p>
+            <ul className="space-y-1">
+              {impediments.map(({ task, text }) => (
+                <li key={task.id}>
+                  <button
+                    type="button"
+                    onClick={() => onOpenTask(task)}
+                    className="inline-flex items-start gap-1.5 text-left text-peach-ink hover:underline"
+                  >
+                    <Icon name="lock" size={13} className="mt-0.5" />
+                    <span className="[overflow-wrap:anywhere]">{text}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
     </Card>
+  )
+}
+
+function Column({
+  title,
+  tasks,
+  empty,
+  onOpen,
+}: {
+  title: string
+  tasks: Task[]
+  empty: string
+  onOpen: (task: Task) => void
+}) {
+  return (
+    <div className="min-w-0">
+      <h3 className="eyebrow mb-2">{title}</h3>
+      {tasks.length === 0 ? (
+        <p className="text-[13px] text-ink-faint">{empty}</p>
+      ) : (
+        <ul className="space-y-2">
+          {tasks.map((task) => (
+            <li key={task.id}>
+              <button
+                type="button"
+                onClick={() => onOpen(task)}
+                className="text-left text-[13px] leading-snug text-ink [overflow-wrap:anywhere] hover:text-accent"
+              >
+                {task.title}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }

@@ -9,7 +9,7 @@ import { useTaskEditor } from './TaskEditor'
 interface TaskRowProps {
   task: Task
   area?: Area
-  /** motivos da priorização, mostrados nas Prioridades de hoje */
+  /** motivos da priorização, mostrados nas prioridades */
   reasons?: string[]
   showDate?: boolean
   isPinned?: boolean
@@ -23,57 +23,55 @@ export function TaskRow({ task, area, reasons, showDate = true, isPinned = false
   const reopenTask = useReopenTask()
   const isDone = task.status === 'done'
   const isOverdue = !isDone && task.due_date !== null && daysFromToday(task.due_date) < 0
-  const ringColor = area?.color ?? 'var(--color-ink-faint)'
+  const ringColor = area?.color ?? 'var(--color-line-strong)'
 
   const toggle = () => (isDone ? reopenTask.mutate(task.id) : completeTask.mutate(task.id))
 
   return (
-    <div className="group flex items-start gap-3 py-2">
+    <div className="group flex items-start gap-3.5 py-3.5">
       <button
         type="button"
         onClick={toggle}
         aria-label={isDone ? `Reabrir "${task.title}"` : `Concluir "${task.title}"`}
-        className="mt-0.5 grid size-[22px] shrink-0 place-items-center rounded-md border-2 transition-colors"
-        style={{ borderColor: ringColor, backgroundColor: isDone ? ringColor : 'transparent' }}
+        className="mt-px grid size-5 shrink-0 place-items-center rounded-md border-[1.5px] transition-colors hover:bg-hover"
+        style={{ borderColor: ringColor, backgroundColor: isDone ? ringColor : undefined }}
       >
-        {isDone && <Icon name="check" size={14} className="text-white [animation:check-pop_.25s_ease-out]" />}
+        {isDone && <Icon name="check" size={13} className="text-white [animation:check-pop_.25s_ease-out]" />}
       </button>
 
       <button type="button" onClick={() => openTask(task)} className="min-w-0 flex-1 text-left">
-        <span className={`block text-[15px] leading-snug font-medium [overflow-wrap:anywhere] ${isDone ? 'text-ink-faint line-through' : ''}`}>
+        <span
+          className={`block text-[15px] leading-snug [overflow-wrap:anywhere] ${isDone ? 'text-ink-faint line-through' : 'text-ink'}`}
+        >
           {task.title}
         </span>
         <span className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-soft">
           {isPinned && (
-            <span className="inline-flex items-center gap-0.5 font-semibold text-lilac-deep">
+            <span className="inline-flex items-center gap-0.5 font-medium text-accent">
               <Icon name="pin" size={12} /> fixada
             </span>
           )}
           {showDate && task.due_date && (
-            <span className={`inline-flex items-center gap-1 ${isOverdue ? 'font-semibold text-alert' : ''}`}>
-              <Icon name="calendar" size={12} />
+            <span className={isOverdue ? 'font-medium text-alert' : ''}>
               {formatRelativeDate(task.due_date)}
               {task.due_time && `, ${formatTime(task.due_time)}`}
             </span>
           )}
-          {!showDate && task.due_time && (
-            <span className="inline-flex items-center gap-1">
-              <Icon name="clock" size={12} /> {formatTime(task.due_time)}
-            </span>
-          )}
+          {!showDate && task.due_time && <span>{formatTime(task.due_time)}</span>}
           {task.duration_minutes && <span>~{formatDuration(task.duration_minutes)}</span>}
           {task.recurrence && <Icon name="repeat" size={12} />}
           {task.priority >= 3 && (
-            <span
-              className={`inline-flex items-center gap-0.5 font-semibold ${task.priority === 4 ? 'text-alert' : ''}`}
-            >
-              <Icon name="flag" size={12} /> {task.priority === 4 ? 'urgente' : 'alta'}
-            </span>
+            <span className="font-medium text-alert">{task.priority === 4 ? 'urgente' : 'alta'}</span>
           )}
           {area && (
-            <span className="inline-flex items-center gap-1">
-              <span className="size-2 rounded-full" style={{ backgroundColor: area.color }} />
+            <span className="inline-flex items-center gap-1.5">
+              <span className="size-[7px] rounded-[2px]" style={{ backgroundColor: area.color }} />
               {area.name}
+            </span>
+          )}
+          {task.blocked_reason && !isDone && (
+            <span className="inline-flex items-center gap-1 font-medium text-peach-ink">
+              <Icon name="lock" size={12} /> {task.blocked_reason}
             </span>
           )}
           {reasons && reasons.length > 0 && <span className="text-ink-faint">{reasons.slice(0, 2).join(', ')}</span>}

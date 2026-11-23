@@ -33,11 +33,26 @@ export interface Task {
   status: 'open' | 'done'
   completed_at: string | null
   created_at: string
+  /** quando foi começada pelo foco; some ao concluir. Pode faltar se a migration 0004 não rodou. */
+  started_at?: string | null
+  /** motivo de estar travada; aparece nos impedimentos. Pode faltar se a migration 0004 não rodou. */
+  blocked_reason?: string | null
 }
 
 export type NewTask = Pick<Task, 'title'> &
   Partial<
-    Pick<Task, 'area_id' | 'kind' | 'notes' | 'priority' | 'due_date' | 'due_time' | 'duration_minutes' | 'recurrence'>
+    Pick<
+      Task,
+      | 'area_id'
+      | 'kind'
+      | 'notes'
+      | 'priority'
+      | 'due_date'
+      | 'due_time'
+      | 'duration_minutes'
+      | 'recurrence'
+      | 'blocked_reason'
+    >
   >
 
 export type TaskChanges = Partial<Omit<Task, 'id' | 'created_at'>>
@@ -54,6 +69,7 @@ export interface Study {
   status: StudyStatus
   notes: string | null
   created_at: string
+  updated_at?: string
 }
 
 export type NewStudy = Pick<Study, 'title' | 'total'> & Partial<Pick<Study, 'unit_label' | 'progress' | 'target_date'>>

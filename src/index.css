@@ -1,33 +1,99 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Inter Tight', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #ece9f3;
-  --color-paper: #f7f6fb;
-  --color-card: #fefdff;
-  --color-line: #e3dfec;
+  /* fundo neutro, cartões brancos, tinta quase preta e um violeta de destaque */
+  --color-canvas: #f6f6f4;
+  --color-paper: #f6f6f4;
+  --color-card: #ffffff;
+  --color-line: #e8e8e4;
+  --color-line-strong: #d6d6d0;
 
-  --color-ink: #251f3a;
-  --color-ink-soft: #615b78;
-  --color-ink-faint: #9b96ae;
+  --color-ink: #191919;
+  --color-ink-soft: #5c5c57;
+  --color-ink-faint: #9b9b95;
 
-  --color-lilac: #d8cef6;
-  --color-lilac-deep: #6a52c4;
-  --color-lilac-ink: #2b2152;
-  --color-mint: #d5eadc;
-  --color-mint-deep: #bcdcc8;
+  --color-panel: #1c1c1e;
+  --color-muted: #efefec;
 
-  --color-peach: #f7d9c4;
-  --color-peach-deep: #f0bf9c;
-  --color-peach-ink: #6a3a1c;
+  --color-accent: #5b4cdb;
+  --color-accent-soft: #efedfb;
+  --color-accent-ink: #3a2fae;
 
-  --color-alert: #b33b3b;
-  --color-alert-soft: #f5d8d4;
-  --color-ok: #3d8c6e;
+  /* nomes antigos, apontando pra paleta nova */
+  --color-lilac: #efedfb;
+  --color-lilac-deep: #5b4cdb;
+  --color-lilac-ink: #2a2470;
+  --color-mint: #e7f3ef;
+  --color-mint-deep: #cfe8df;
+  --color-peach: #fbeee2;
+  --color-peach-deep: #f3d6bd;
+  --color-peach-ink: #7a4516;
 
-  --radius-card: 1.25rem;
+  --color-alert: #b42318;
+  --color-alert-soft: #fdecea;
+  --color-ok: #1e8a63;
+
+  /* estados e detalhes que mudam com o tema */
+  --color-hover: rgb(0 0 0 / 0.04);
+  --color-hover-strong: rgb(0 0 0 / 0.06);
+  --color-accent-hover: #3a2fae;
+  --color-panel-hover: #000000;
+  --color-busy: #e6e6e2;
+  --color-highlight: #fbe9a6;
+
+  --radius-card: 1rem;
+}
+
+/* ─── Tema escuro ──────────────────────────────────────────────────────────
+   Ativado por data-theme="dark" no <html> (ver src/lib/theme.ts).
+   Os componentes usam só as variáveis acima, então tudo troca junto. */
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-canvas: #111113;
+  --color-paper: #111113;
+  --color-card: #1b1b1f;
+  --color-line: #2b2b30;
+  --color-line-strong: #3d3d44;
+
+  --color-ink: #ececea;
+  --color-ink-soft: #a6a6a0;
+  --color-ink-faint: #707069;
+
+  /* o card de foco continua escuro, mas destacado do fundo */
+  --color-panel: #2a2a31;
+  --color-muted: #232328;
+
+  --color-accent: #7466ee;
+  --color-accent-soft: #25223f;
+  --color-accent-ink: #c6bfff;
+
+  --color-lilac: #25223f;
+  --color-lilac-deep: #8d82f5;
+  --color-lilac-ink: #d4cfff;
+  --color-mint: #16302a;
+  --color-mint-deep: #1f453b;
+  --color-peach: #33261b;
+  --color-peach-deep: #4f3823;
+  --color-peach-ink: #f2c49c;
+
+  --color-alert: #ff8f84;
+  --color-alert-soft: #3b1e1c;
+  --color-ok: #4cc79c;
+
+  --color-hover: rgb(255 255 255 / 0.05);
+  --color-hover-strong: rgb(255 255 255 / 0.08);
+  --color-accent-hover: #6052e0;
+  --color-panel-hover: #34343c;
+  --color-busy: #2a2a2f;
+  --color-highlight: #5c4c16;
 }
 
 @layer base {
@@ -68,7 +134,7 @@
 @layer components {
   /* 16px no celular: abaixo disso o iOS dá zoom ao focar o campo */
   .field {
-    @apply block w-full min-w-0 rounded-xl border border-line bg-card px-3 py-2.5 text-base outline-none transition-colors placeholder:text-ink-faint focus:border-lilac sm:text-[15px];
+    @apply block w-full min-w-0 rounded-xl border border-line bg-card px-3.5 py-2.5 text-base outline-none transition-colors placeholder:text-ink-faint focus:border-ink sm:text-[15px];
   }
 
   /* data e horário nativos do iOS/Android têm largura mínima própria e
@@ -97,23 +163,64 @@
   }
 
   .label {
-    @apply mb-1.5 block text-xs font-semibold text-ink-soft;
+    @apply mb-1.5 block text-[13px] font-medium text-ink-soft;
   }
 
+  /* botões: destaque (violeta), escuro, contorno e discreto */
   .button-primary {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-full bg-lilac-deep px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-ink disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover disabled:opacity-50;
+  }
+
+  .button-dark {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl bg-panel px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-panel-hover disabled:opacity-50;
+  }
+
+  .button-outline {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-line bg-card px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:border-line-strong disabled:opacity-50;
   }
 
   .button-quiet {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-ink-soft transition-colors hover:bg-black/5 hover:text-ink;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-ink-soft transition-colors hover:bg-hover-strong hover:text-ink;
+  }
+
+  .icon-button {
+    @apply grid size-11 shrink-0 place-items-center rounded-xl border border-line bg-card text-ink transition-colors hover:border-line-strong disabled:opacity-40;
   }
 
   .chip {
     @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap;
   }
 
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-3.5 py-1.5 text-sm font-medium text-ink transition-colors hover:border-line-strong;
+  }
+
+  .pill[aria-pressed='true'] {
+    @apply border-panel bg-panel text-white;
+  }
+
+  .segmented {
+    @apply inline-flex gap-0.5 rounded-xl bg-muted p-1;
+  }
+
+  .segmented > button {
+    @apply rounded-lg px-4 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:text-ink;
+  }
+
+  .segmented > button[aria-pressed='true'] {
+    @apply bg-card text-ink shadow-[0_1px_2px_rgba(0,0,0,.08)];
+  }
+
+  .card {
+    @apply rounded-[var(--radius-card)] border border-line bg-card;
+  }
+
   .eyebrow {
-    @apply text-[11px] font-bold tracking-[0.12em] text-ink-soft uppercase;
+    @apply text-[11px] font-semibold tracking-[0.1em] text-ink-soft uppercase;
+  }
+
+  .page-title {
+    @apply font-display text-[2rem] leading-[1.05] font-bold tracking-[-0.03em] sm:text-[2.6rem];
   }
 }
 
@@ -121,6 +228,11 @@
   0% { transform: scale(1); }
   40% { transform: scale(1.25); }
   100% { transform: scale(1); }
+}
+
+@keyframes timer-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .55; }
 }
 
 @keyframes sheet-in {
@@ -146,7 +258,7 @@
   font-family: var(--font-display);
   font-size: 1.3rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.25;
   margin-top: 1.2em;
 }
@@ -218,7 +330,7 @@
 }
 
 .note-content mark {
-  background: #fbe9a6;
+  background: var(--color-highlight);
   color: inherit;
   border-radius: 0.2em;
   padding: 0 0.1em;
@@ -239,8 +351,8 @@
 }
 
 .note-content pre {
-  background: var(--color-lilac-ink);
-  color: #f1eefb;
+  background: var(--color-panel);
+  color: #f3f3f1;
   border-radius: 0.75rem;
   padding: 0.85rem 1rem;
   overflow-x: auto;

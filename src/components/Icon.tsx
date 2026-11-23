@@ -20,6 +20,17 @@ const PATHS = {
   alert: 'M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z',
   minus: 'M5 12h14',
   menu: 'M4 6h16M4 12h16M4 18h16',
+  chevronLeft: 'M15 18l-6-6 6-6',
+  chevronRight: 'M9 18l6-6-6-6',
+  chevronDown: 'M6 9l6 6 6-6',
+  play: 'M7 5v14l11-7L7 5Z',
+  pause: 'M8 5v14M16 5v14',
+  stop: 'M6 6h12v12H6z',
+  lock: 'M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5V11Z',
+  edit: 'M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4',
+  google:
+    'M21 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5a4.3 4.3 0 0 1-1.9 2.8v2.3h3A9 9 0 0 0 21 12.2ZM12 21a8.8 8.8 0 0 0 6.1-2.2l-3-2.3A5.4 5.4 0 0 1 7 13.7H3.9v2.4A9 9 0 0 0 12 21ZM7 13.7a5.4 5.4 0 0 1 0-3.4V7.9H3.9a9 9 0 0 0 0 8.2L7 13.7ZM12 6.6a4.9 4.9 0 0 1 3.4 1.3l2.6-2.6A8.7 8.7 0 0 0 12 3a9 9 0 0 0-8.1 4.9L7 10.3a5.4 5.4 0 0 1 5-3.7Z',
+  inboxCheck: 'M3 13h5l1.5 3h5L16 13h5M5.5 5h13L21 13v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6l2.5-8ZM9 9.5l2 2 4-4',
   copy: 'M9 9h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1ZM5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1',
 } as const
 
@@ -33,7 +44,7 @@ export function Icon({ name, size = 18, className = '' }: { name: IconName; size
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.9}
+      strokeWidth={1.75}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
