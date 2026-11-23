@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { Icon } from '../components/Icon'
 import { useAreas, useCreateArea, useDeleteArea, useUpdateArea } from '../data/areas'
 import { useSaveSettings, useSettings } from '../data/settings'
+import { isAreaNameTaken } from '../lib/areas/isAreaNameTaken'
 import { signOut } from '../auth/SessionProvider'
 import type { Area, UserSettings } from '../types'
 
@@ -138,10 +139,11 @@ function AreasSettings() {
   const { areas } = useAreas()
   const createArea = useCreateArea()
   const [newName, setNewName] = useState('')
+  const isDuplicate = newName.trim() !== '' && isAreaNameTaken(newName, areas)
 
   const handleCreate = (event: FormEvent) => {
     event.preventDefault()
-    if (!newName.trim()) return
+    if (!newName.trim() || isDuplicate) return
     createArea.mutate({
       name: newName.trim(),
       color: AREA_COLORS[areas.length % AREA_COLORS.length],
@@ -171,10 +173,11 @@ function AreasSettings() {
           placeholder="Nova área, ex.: Saúde"
           maxLength={40}
         />
-        <button type="submit" className="button-primary shrink-0" disabled={!newName.trim()}>
+        <button type="submit" className="button-primary shrink-0" disabled={!newName.trim() || isDuplicate}>
           Criar área
         </button>
       </form>
+      {isDuplicate && <p className="mt-1.5 text-sm text-alert">Já existe uma área com esse nome.</p>}
     </section>
   )
 }
@@ -182,11 +185,13 @@ function AreasSettings() {
 function AreaRow({ area }: { area: Area }) {
   const updateArea = useUpdateArea()
   const deleteArea = useDeleteArea()
+  const { areas } = useAreas()
   const [name, setName] = useState(area.name)
+  const isDuplicate = name.trim() !== '' && isAreaNameTaken(name, areas, area.id)
 
   const saveName = () => {
     const trimmed = name.trim()
-    if (trimmed && trimmed !== area.name) updateArea.mutate({ id: area.id, changes: { name: trimmed } })
+    if (trimmed && trimmed !== area.name && !isDuplicate) updateArea.mutate({ id: area.id, changes: { name: trimmed } })
     else setName(area.name)
   }
 
@@ -213,6 +218,7 @@ function AreaRow({ area }: { area: Area }) {
         onBlur={saveName}
         onKeyDown={(event) => event.key === 'Enter' && (event.target as HTMLInputElement).blur()}
         aria-label="Nome da área"
+        aria-invalid={isDuplicate}
       />
       <label className="flex items-center gap-1.5 text-sm text-ink-soft">
         <input
@@ -236,6 +242,7 @@ function AreaRow({ area }: { area: Area }) {
       >
         <Icon name="trash" size={16} />
       </button>
+      {isDuplicate && <p className="basis-full text-sm text-alert">Já existe uma área com esse nome.</p>}
     </li>
   )
 }

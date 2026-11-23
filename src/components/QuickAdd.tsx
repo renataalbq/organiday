@@ -23,7 +23,7 @@ const SYNTAX_HELP: Array<[string, string]> = [
   ['15h, 9h30, às 8 da noite', 'horário'],
   ['todo dia, dias úteis, toda segunda, todo dia 10', 'repetir'],
   ['~30m  ~1h', 'quanto tempo leva'],
-  ['termina com ?', 'vira uma decisão'],
+  ['termina com ?', 'vira uma decisão (data e hora depois do ? viram o prazo)'],
   ['reunião / call / daily + horário', 'vira uma reunião'],
 ]
 
@@ -33,6 +33,7 @@ export function QuickAdd() {
   const [text, setText] = useState('')
   const [isHelpOpen, setIsHelpOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const parsed = useMemo(() => (text.trim() ? parseQuickAdd(text, areas) : null), [text, areas])
 
@@ -46,6 +47,20 @@ export function QuickAdd() {
     window.addEventListener('keydown', focusOnSlash)
     return () => window.removeEventListener('keydown', focusOnSlash)
   }, [])
+
+  useEffect(() => {
+    if (!isHelpOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => event.key === 'Escape' && setIsHelpOpen(false)
+    const closeOnOutside = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) setIsHelpOpen(false)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    window.addEventListener('pointerdown', closeOnOutside)
+    return () => {
+      window.removeEventListener('keydown', closeOnEscape)
+      window.removeEventListener('pointerdown', closeOnOutside)
+    }
+  }, [isHelpOpen])
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -61,10 +76,11 @@ export function QuickAdd() {
       recurrence: parsed.recurrence,
     })
     setText('')
+    setIsHelpOpen(false)
   }
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <form
         onSubmit={handleSubmit}
         className="flex items-center gap-2 rounded-full border border-line bg-card py-1.5 pr-1.5 pl-4 focus-within:border-lilac"
@@ -95,7 +111,7 @@ export function QuickAdd() {
 
       {parsed && (parsed.tokens.length > 0 || parsed.title) && (
         <div className="mt-2 flex flex-wrap items-center gap-1.5 px-2 text-xs">
-          <span className="font-semibold text-ink">{parsed.title || 'Sem título ainda'}</span>
+          <span className="min-w-0 font-semibold text-ink [overflow-wrap:anywhere]">{parsed.title || 'Sem título ainda'}</span>
           {parsed.tokens.map((token) => (
             <span key={token.kind + token.label} className={`chip ${TOKEN_CLASSES[token.kind]}`}>
               {token.label}

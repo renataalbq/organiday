@@ -123,8 +123,8 @@ export function TodayPage() {
                         item.tone === 'alert' ? 'bg-alert-soft text-alert' : 'bg-peach/60 text-peach-ink'
                       }`}
                     >
-                      <Icon name={item.tone === 'alert' ? 'alert' : 'clock'} size={16} className="mt-0.5" />
-                      {item.text}
+                      <Icon name={item.tone === 'alert' ? 'alert' : 'clock'} size={16} className="mt-0.5 shrink-0" />
+                      <span className="min-w-0 [overflow-wrap:anywhere]">{item.text}</span>
                     </button>
                   </li>
                 )
@@ -347,7 +347,7 @@ function DecisionRow({ decision, onOpen }: { decision: Task; onOpen: (task: Task
       <button
         type="button"
         onClick={() => onOpen(decision)}
-        className="min-w-0 flex-1 text-left text-[15px] leading-snug font-medium text-peach-ink"
+        className="min-w-0 flex-1 text-left text-[15px] leading-snug font-medium text-peach-ink [overflow-wrap:anywhere]"
       >
         {decision.title}
       </button>
