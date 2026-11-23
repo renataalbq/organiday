@@ -51,6 +51,11 @@ export function scoreTask(task: Task, area: Area | undefined, today: Date = new 
   return { score, reasons }
 }
 
+/** Pode entrar no plano do dia: fixada nele, sem prazo, ou com prazo até ele. Vence depois, fica pra depois. */
+export function isPlannableOn(task: Task, dayISO: string): boolean {
+  return task.focus_date === dayISO || task.due_date === null || task.due_date <= dayISO
+}
+
 export interface RankedTask {
   task: Task
   score: number

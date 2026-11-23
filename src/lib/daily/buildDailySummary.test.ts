@@ -98,3 +98,19 @@ test('sem nada feito', () => {
     'Ontem:\n• nada marcado como concluído\n\nHoje:\n• sem tarefas de trabalho abertas\n\nImpedimentos: nenhum',
   )
 })
+
+test('não planeja pra hoje tarefa que vence amanhã, mesmo com prioridade alta', () => {
+  const summary = buildDailySummary({
+    tasks: [
+      task({ title: 'Pedir keys pro Hugo', priority: 3, due_date: '2026-11-24' }),
+      task({ title: 'Corrigir ajustes da review', due_date: '2026-11-23' }),
+    ],
+    areasById,
+    settings: DEFAULT_SETTINGS,
+    now: new Date(2026, 10, 23, 9, 0),
+  })
+  assert.deepEqual(
+    summary.plan.map((t) => t.title),
+    ['Corrigir ajustes da review'],
+  )
+})

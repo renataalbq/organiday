@@ -6,7 +6,7 @@ import { buildAttentionItems } from '../lib/attention/buildAttentionItems'
 import { buildDailySummary } from '../lib/daily/buildDailySummary'
 import { computeDayBudget } from '../lib/dayBudget/dayBudget'
 import { daysFromToday } from '../lib/dates'
-import { rankTasks } from '../lib/priority/scoreTask'
+import { isPlannableOn, rankTasks } from '../lib/priority/scoreTask'
 import { useNow } from './useNow'
 
 const FOCUS_SIZE = 3
@@ -32,7 +32,7 @@ export function useTodayBoard() {
     )
 
     const ranked = rankTasks(openTasks, areasById, todayISO, now)
-    const focus = ranked.slice(0, FOCUS_SIZE)
+    const focus = ranked.filter((item) => isPlannableOn(item.task, todayISO)).slice(0, FOCUS_SIZE)
     const focusIds = new Set(focus.map((item) => item.task.id))
 
     const workTasksForToday = openTasks.filter(

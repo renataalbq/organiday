@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { rankTasks, scoreTask } from './scoreTask.ts'
+import { isPlannableOn, rankTasks, scoreTask } from './scoreTask.ts'
 import type { Area, Task } from '../../types.ts'
 
 const MONDAY = new Date(2026, 10, 23, 9)
@@ -56,4 +56,12 @@ test('fixada no foco vem primeiro e reuniões ficam fora', () => {
     ranked.map((item) => item.task.id),
     ['pinned', 'urgent'],
   )
+})
+
+test('só entra no plano do dia o que vence até ele, não tem prazo ou foi fixado nele', () => {
+  assert.equal(isPlannableOn(task({ due_date: '2026-11-23' }), '2026-11-23'), true)
+  assert.equal(isPlannableOn(task({ due_date: '2026-11-20' }), '2026-11-23'), true)
+  assert.equal(isPlannableOn(task({ due_date: null }), '2026-11-23'), true)
+  assert.equal(isPlannableOn(task({ due_date: '2026-11-24' }), '2026-11-23'), false)
+  assert.equal(isPlannableOn(task({ due_date: '2026-11-24', focus_date: '2026-11-23' }), '2026-11-23'), true)
 })
