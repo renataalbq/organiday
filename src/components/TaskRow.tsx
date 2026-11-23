@@ -40,7 +40,7 @@ export function TaskRow({ task, area, reasons, showDate = true, isPinned = false
       </button>
 
       <button type="button" onClick={() => openTask(task)} className="min-w-0 flex-1 text-left">
-        <span className={`block text-[15px] leading-snug font-medium ${isDone ? 'text-ink-faint line-through' : ''}`}>
+        <span className={`block text-[15px] leading-snug font-medium [overflow-wrap:anywhere] ${isDone ? 'text-ink-faint line-through' : ''}`}>
           {task.title}
         </span>
         <span className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-ink-soft">

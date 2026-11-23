@@ -3,6 +3,7 @@ import { sendMagicLink, signInWithGoogle } from '../auth/SessionProvider'
 import { Icon, type IconName } from '../components/Icon'
 import { Logo } from '../components/Logo'
 import { APP_NAME } from '../config'
+import { translateAuthError } from '../lib/auth/translateAuthError'
 
 const FEATURES: { icon: IconName; title: string; text: string; tone: string }[] = [
   {
@@ -111,7 +112,7 @@ function LoginCard() {
     setStatus('sending')
     const { error } = await sendMagicLink(email)
     if (error) {
-      setErrorMessage(error.message)
+      setErrorMessage(translateAuthError(error))
       setStatus('error')
     } else {
       setStatus('sent')

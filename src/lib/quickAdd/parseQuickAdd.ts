@@ -83,6 +83,7 @@ class Scanner {
   private readonly original: string
   private readonly normalized: string
   private readonly consumed: boolean[]
+  private lockedBefore = 0
 
   constructor(original: string) {
     this.original = original
@@ -96,12 +97,24 @@ class Scanner {
     for (const match of this.normalized.matchAll(regex)) {
       const start = match.index
       const end = start + match[0].length
-      if (match[0].length === 0 || this.isConsumed(start, end)) continue
+      if (match[0].length === 0 || start < this.lockedBefore || this.isConsumed(start, end)) continue
       if (handler(match) === false) continue
       this.consumed.fill(true, start, end)
       return true
     }
     return false
+  }
+
+  /** Daqui pra frente, nenhuma regra pode consumir texto antes de `index`. */
+  lockBefore(index: number) {
+    this.lockedBefore = index
+  }
+
+  /** Índice do "?" que fecha uma pergunta, ou -1. Um "?" logo no começo é o atalho de decisão, não pergunta. */
+  questionEnd(): number {
+    const end = this.normalized.lastIndexOf('?')
+    const firstChar = this.normalized.search(/\S/)
+    return end > firstChar ? end : -1
   }
 
   remainingText(): string {
@@ -111,7 +124,7 @@ class Scanner {
     }
     return text
       .replace(/\s+/g, ' ')
-      .replace(/\s+([,.;:])/g, '$1')
+      .replace(/\s+([,.;:?!])/g, '$1')
       .replace(/^[\s,;:-]+|[\s,;:-]+$/g, '')
   }
 
@@ -203,6 +216,11 @@ export function parseQuickAdd(input: string, areas: Area[], now: Date = new Date
       label: durationMinutes >= 60 ? `~${durationMinutes / 60}h` : `~${durationMinutes}min`,
     })
   })
+
+  // Data e hora dentro de uma pergunta fazem parte dela ("manter a daily às 10h30?").
+  // Só o que vem depois do "?" vira prazo da decisão.
+  const questionEnd = scanner.questionEnd()
+  if (questionEnd >= 0) scanner.lockBefore(questionEnd + 1)
 
   // ── Recorrência ─────────────────────────────────────────────────────────
   const recurrenceRules: Array<[RegExp, (match: RegExpExecArray) => boolean | void]> = [

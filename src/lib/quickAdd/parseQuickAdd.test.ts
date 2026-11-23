@@ -129,3 +129,17 @@ test('reunião só quando tem horário', () => {
   assert.equal(parse('reunião com time de produto 14h ~1h').kind, 'meeting')
   assert.equal(parse('reunião: preparar pauta').kind, 'task')
 })
+
+test('pergunta mantém data e hora no título; o que vem depois do ? vira prazo', () => {
+  const areas: Area[] = [...AREAS, { id: 'proj', name: 'Projetos', color: '#000000', kind: 'life', position: 3 }]
+  const inside = parseQuickAdd('[QA] manter a daily às 10h30? #proj', areas, NOW)
+  assert.equal(inside.kind, 'decision')
+  assert.equal(inside.title, '[QA] manter a daily às 10h30?')
+  assert.equal(inside.dueTime, null)
+  assert.equal(inside.dueDate, null)
+  assert.equal(inside.areaId, 'proj')
+
+  const after = parse('trocar de plano de celular? sexta')
+  assert.equal(after.title, 'trocar de plano de celular?')
+  assert.equal(after.dueDate, '2026-11-27')
+})
