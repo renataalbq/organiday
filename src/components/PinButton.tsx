@@ -13,16 +13,14 @@ export function PinButton({ task }: { task: Task }) {
     <button
       type="button"
       onClick={() => updateTask.mutate({ id: task.id, changes: { focus_date: isPinned ? null : todayISO } })}
-      className={`grid size-8 shrink-0 place-items-center rounded-full transition-colors ${
-        isPinned
-          ? 'bg-lilac-deep text-white'
-          : 'text-ink-faint opacity-100 hover:bg-black/5 hover:text-ink sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100'
+      className={`grid size-10 shrink-0 place-items-center rounded-lg transition-colors ${
+        isPinned ? 'bg-accent-soft text-accent' : 'text-ink-faint hover:bg-hover-strong hover:text-ink'
       }`}
       aria-label={isPinned ? `Tirar "${task.title}" das prioridades` : `Fixar "${task.title}" nas prioridades de hoje`}
       aria-pressed={isPinned}
       title={isPinned ? 'Tirar das prioridades' : 'Fixar nas prioridades de hoje'}
     >
-      <Icon name="pin" size={15} />
+      <Icon name="pin" size={16} />
     </button>
   )
 }

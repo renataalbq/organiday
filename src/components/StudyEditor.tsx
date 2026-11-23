@@ -5,7 +5,7 @@ import { Icon } from './Icon'
 import { prefersAutoFocus } from '../lib/device'
 import { Sheet } from './Sheet'
 
-const STATUS_LABEL: Record<StudyStatus, string> = { active: 'Estudando', paused: 'Pausado', done: 'Concluído' }
+const STATUS_LABEL: Record<StudyStatus, string> = { active: 'Estudando', paused: 'Na fila', done: 'Concluído' }
 
 interface StudyEditorProps {
   study?: Study
@@ -74,6 +74,7 @@ export function StudyEditor({ study, onClose }: StudyEditorProps) {
               <button
                 type="button"
                 onClick={() => {
+                  if (!window.confirm(`Excluir o estudo "${study.title}"?`)) return
                   deleteStudy.mutate(study.id)
                   onClose()
                 }}

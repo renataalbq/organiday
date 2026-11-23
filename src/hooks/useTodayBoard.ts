@@ -6,14 +6,16 @@ import { buildAttentionItems } from '../lib/attention/buildAttentionItems'
 import { buildDailySummary } from '../lib/daily/buildDailySummary'
 import { computeDayBudget } from '../lib/dayBudget/dayBudget'
 import { daysFromToday } from '../lib/dates'
+import { pickNextTask } from '../lib/focus/pickNextTask'
 import { isPlannableOn, rankTasks } from '../lib/priority/scoreTask'
+import { toISODate } from '../lib/dates'
 import { useNow } from './useNow'
 
 const FOCUS_SIZE = 3
 const UPCOMING_DAYS = 7
 
 /** Tudo que a tela "Hoje" precisa, já calculado a partir das tarefas, áreas e expediente. */
-export function useTodayBoard() {
+export function useTodayBoard(runningTaskId: string | null = null) {
   const { now, todayISO } = useNow()
   const tasksQuery = useTasks()
   const { areas, areasById, isLoading: areasLoading } = useAreas()
@@ -32,8 +34,21 @@ export function useTodayBoard() {
     )
 
     const ranked = rankTasks(openTasks, areasById, todayISO, now)
-    const focus = ranked.filter((item) => isPlannableOn(item.task, todayISO)).slice(0, FOCUS_SIZE)
-    const focusIds = new Set(focus.map((item) => item.task.id))
+    const plannable = ranked.filter((item) => isPlannableOn(item.task, todayISO))
+    const nowMinute = now.getHours() * 60 + now.getMinutes()
+    const next = pickNextTask({ ranked: plannable, todayISO, nowMinute, runningTaskId })
+    const focus = plannable.filter((item) => item.task.id !== next?.task.id).slice(0, FOCUS_SIZE)
+    const focusIds = new Set([...focus.map((item) => item.task.id), ...(next ? [next.task.id] : [])])
+
+    const completedToday = (task: { completed_at: string | null }) =>
+      task.completed_at !== null && toISODate(new Date(task.completed_at)) === todayISO
+    const doneToday = allTasks
+      .filter((task) => task.kind === 'task' && task.status === 'done' && completedToday(task))
+      .sort((a, b) => (a.completed_at ?? '').localeCompare(b.completed_at ?? ''))
+    const openToday = openTasks.filter((task) => task.kind === 'task' && isDueByToday(task.due_date))
+    const timelineEvents = allTasks.filter(
+      (task) => task.due_date === todayISO && task.due_time !== null && task.kind !== 'decision',
+    )
 
     const workTasksForToday = openTasks.filter(
       (task) =>
@@ -60,7 +75,7 @@ export function useTodayBoard() {
 
     const upcoming = openTasks
       .filter((task) => {
-        if (task.kind === 'decision' || !task.due_date || focusIds.has(task.id)) return false
+        if (task.kind === 'decision' || !task.due_date) return false
         const days = daysFromToday(task.due_date, now)
         return days > 0 && days <= UPCOMING_DAYS
       })
@@ -75,6 +90,10 @@ export function useTodayBoard() {
     ).length
 
     return {
+      next,
+      doneToday,
+      openTodayCount: openToday.length,
+      timelineEvents,
       todayMeetings,
       meetingsDoneToday,
       focus,
@@ -88,7 +107,7 @@ export function useTodayBoard() {
       dueTodayCount,
       overdueCount,
     }
-  }, [tasksQuery.data, areasById, settings, now, todayISO])
+  }, [tasksQuery.data, areasById, settings, now, todayISO, runningTaskId])
 
   return {
     ...board,

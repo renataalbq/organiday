@@ -58,6 +58,15 @@ export function useDeleteStudy() {
       const { error } = await supabase.from('studies').delete().eq('id', id)
       if (error) throw error
     },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: STUDIES_KEY })
+      const previous = queryClient.getQueryData<Study[]>(STUDIES_KEY)
+      if (previous) queryClient.setQueryData<Study[]>(STUDIES_KEY, previous.filter((study) => study.id !== id))
+      return { previous }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previous) queryClient.setQueryData(STUDIES_KEY, context.previous)
+    },
     onSettled: () => queryClient.invalidateQueries({ queryKey: STUDIES_KEY }),
   })
 }

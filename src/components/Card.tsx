@@ -1,25 +1,18 @@
 import type { ReactNode } from 'react'
 
-const TONE_CLASSES = {
-  plain: 'bg-card border border-line',
-  peach: 'bg-peach',
-  mint: 'bg-mint',
-  lilac: 'bg-lilac text-lilac-ink',
-} as const
-
 interface CardProps {
-  title: string
-  tone?: keyof typeof TONE_CLASSES
+  title: ReactNode
+  /** texto ou botão à direita do título */
   action?: ReactNode
   className?: string
   children: ReactNode
 }
 
-export function Card({ title, tone = 'plain', action, className = '', children }: CardProps) {
+export function Card({ title, action, className = '', children }: CardProps) {
   return (
-    <section className={`rounded-[var(--radius-card)] p-4 sm:p-5 ${TONE_CLASSES[tone]} ${className}`}>
-      <header className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="font-display text-[17px] font-bold tracking-tight">{title}</h2>
+    <section className={`card p-5 sm:p-6 ${className}`}>
+      <header className="mb-4 flex min-h-8 items-center justify-between gap-3">
+        <h2 className="font-display text-[17px] font-semibold tracking-[-0.01em]">{title}</h2>
         {action}
       </header>
       {children}

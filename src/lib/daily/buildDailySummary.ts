@@ -13,7 +13,10 @@ export interface DailySummary {
   /** dia do plano ("Hoje", "Amanhã", "Segunda") */
   planLabel: string
   done: Task[]
+  /** o que vou fazer: primeiro as já começadas pelo foco, depois as mais prioritárias */
   plan: Task[]
+  /** tarefas marcadas como bloqueadas, com o motivo */
+  blocked: Task[]
   /** decisões de trabalho em aberto, que podem estar travando algo */
   blockers: Task[]
   text: string
@@ -50,9 +53,10 @@ function relativeLabel(date: Date, today: Date): string {
 }
 
 /**
- * Resumo pra daily, só com o que é de áreas de trabalho.
- * Durante o expediente: o que foi feito no último dia útil + plano de hoje.
- * Depois do expediente ou no fim de semana: o que foi feito no último dia útil (inclusive hoje) + plano do próximo.
+ * Resumo pra daily (ou qualquer reunião), só com o que é de áreas de trabalho:
+ * o que já fiz, o que vou fazer e o que está travado.
+ * Durante o expediente: feito no último dia útil + plano de hoje.
+ * Depois do expediente ou no fim de semana: feito no último dia útil (inclusive hoje) + plano do próximo.
  */
 export function buildDailySummary({ tasks, areasById, settings, now }: DailySummaryInput): DailySummary {
   const today = addDays(now, 0)
@@ -77,30 +81,38 @@ export function buildDailySummary({ tasks, areasById, settings, now }: DailySumm
     .sort((a, b) => a.completed_at!.localeCompare(b.completed_at!))
 
   const openWork = tasks.filter((task) => isWorkTask(task) && task.status === 'open')
+  const blocked = openWork.filter((task) => task.kind === 'task' && Boolean(task.blocked_reason))
+  // já começadas continuam sendo "vou fazer", e vêm antes das outras
+  const started = openWork.filter((task) => task.kind === 'task' && Boolean(task.started_at) && !task.blocked_reason)
+  const skipIds = new Set([...blocked, ...started].map((task) => task.id))
+
   const planDayISO = toISODate(planDay)
-  const plannable = openWork.filter((task) => isPlannableOn(task, planDayISO))
-  const plan = rankTasks(plannable, areasById, planDayISO, planDay)
-    .slice(0, PLAN_SIZE)
+  const plannable = openWork.filter((task) => !skipIds.has(task.id) && isPlannableOn(task, planDayISO))
+  const ranked = rankTasks(plannable, areasById, planDayISO, planDay)
+    .slice(0, Math.max(0, PLAN_SIZE - started.length))
     .map((item) => item.task)
+  const plan = [...started, ...ranked]
   const blockers = openWork.filter((task) => task.kind === 'decision')
 
   const doneLabel = relativeLabel(doneDay, today)
   const planLabel = relativeLabel(planDay, today)
 
-  const lines: string[] = [`${doneLabel}:`]
+  const lines: string[] = [`Já fiz (${doneLabel.toLowerCase()}):`]
   if (done.length === 0) lines.push('• nada marcado como concluído')
   for (const task of done) lines.push(`• ${task.kind === 'decision' ? `decidi: ${task.title}` : task.title}`)
 
-  lines.push('', `${planLabel}:`)
+  lines.push('', `Vou fazer (${planLabel.toLowerCase()}):`)
   if (plan.length === 0) lines.push('• sem tarefas de trabalho abertas')
   for (const task of plan) lines.push(`• ${task.title}`)
 
   lines.push('')
-  if (blockers.length === 0) lines.push('Impedimentos: nenhum')
-  else
-    lines.push(
-      `Impedimentos: aguardando decisão sobre ${blockers.map((task) => task.title.replace(/\?$/, '')).join('; ')}`,
-    )
+  const impediments = [
+    ...blocked.map((task) => `${task.title} (${task.blocked_reason})`),
+    ...(blockers.length > 0
+      ? [`aguardando decisão sobre ${blockers.map((task) => task.title.replace(/\?$/, '')).join('; ')}`]
+      : []),
+  ]
+  lines.push(`Impedimentos: ${impediments.length === 0 ? 'nenhum' : impediments.join('; ')}`)
 
-  return { doneDate, doneLabel, planLabel, done, plan, blockers, text: lines.join('\n') }
+  return { doneDate, doneLabel, planLabel, done, plan, blocked, blockers, text: lines.join('\n') }
 }

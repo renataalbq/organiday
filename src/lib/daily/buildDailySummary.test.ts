@@ -95,7 +95,7 @@ test('sem nada feito', () => {
   })
   assert.equal(
     summary.text,
-    'Ontem:\n• nada marcado como concluído\n\nHoje:\n• sem tarefas de trabalho abertas\n\nImpedimentos: nenhum',
+    'Já fiz (ontem):\n• nada marcado como concluído\n\nVou fazer (hoje):\n• sem tarefas de trabalho abertas\n\nImpedimentos: nenhum',
   )
 })
 
@@ -112,5 +112,43 @@ test('não planeja pra hoje tarefa que vence amanhã, mesmo com prioridade alta'
   assert.deepEqual(
     summary.plan.map((t) => t.title),
     ['Corrigir ajustes da review'],
+  )
+})
+
+test('tarefa começada entra primeiro no "Vou fazer" e bloqueada vai pros impedimentos', () => {
+  const summary = buildDailySummary({
+    tasks: [
+      task({ title: 'Corrigir review', priority: 4, due_date: '2026-11-23' }),
+      task({ title: 'Revisar handoff', due_date: '2026-11-23', started_at: '2026-11-23T13:00:00Z' }),
+      task({ title: 'Subir env do CRM', due_date: '2026-11-23', blocked_reason: 'esperando keys do Hugo' }),
+    ],
+    areasById,
+    settings: DEFAULT_SETTINGS,
+    now: new Date(2026, 10, 23, 14, 0),
+  })
+  assert.deepEqual(
+    summary.plan.map((t) => t.title),
+    ['Revisar handoff', 'Corrigir review'],
+  )
+  assert.doesNotMatch(summary.text, /Fazendo/)
+  assert.match(summary.text, /Vou fazer \(hoje\):\n• Revisar handoff\n• Corrigir review/)
+  assert.match(summary.text, /Impedimentos: Subir env do CRM \(esperando keys do Hugo\)$/)
+})
+
+test('começadas contam no limite de 3 do "Vou fazer"', () => {
+  const summary = buildDailySummary({
+    tasks: [
+      task({ title: 'A', due_date: '2026-11-23', started_at: '2026-11-23T10:00:00Z' }),
+      task({ title: 'B', due_date: '2026-11-23', started_at: '2026-11-23T11:00:00Z' }),
+      task({ title: 'C', due_date: '2026-11-23', priority: 4 }),
+      task({ title: 'D', due_date: '2026-11-23', priority: 3 }),
+    ],
+    areasById,
+    settings: DEFAULT_SETTINGS,
+    now: new Date(2026, 10, 23, 14, 0),
+  })
+  assert.deepEqual(
+    summary.plan.map((t) => t.title),
+    ['A', 'B', 'C'],
   )
 })
