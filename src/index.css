@@ -1,22 +1,23 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-display: 'Inter Tight', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* fundo neutro, cartões brancos, tinta quase preta e um violeta de destaque */
-  --color-canvas: #f6f6f4;
-  --color-paper: #f6f6f4;
+  /* fundo cinza claro, cartões brancos (pra destacar do fundo), tinta quase preta e um violeta de destaque */
+  --color-canvas: #ebebe7;
+  --color-paper: #ebebe7;
   --color-card: #ffffff;
-  --color-line: #e8e8e4;
-  --color-line-strong: #d6d6d0;
+  --color-line: #dcdcd6;
+  --color-line-strong: #c8c8c1;
 
   --color-ink: #191919;
   --color-ink-soft: #5c5c57;
   --color-ink-faint: #9b9b95;
 
   --color-panel: #1c1c1e;
-  --color-muted: #efefec;
+  --color-muted: #e2e2dd;
 
   --color-accent: #5b4cdb;
   --color-accent-soft: #efedfb;
@@ -37,11 +38,11 @@
   --color-ok: #1e8a63;
 
   /* estados e detalhes que mudam com o tema */
-  --color-hover: rgb(0 0 0 / 0.04);
-  --color-hover-strong: rgb(0 0 0 / 0.06);
+  --color-hover: rgb(0 0 0 / 0.05);
+  --color-hover-strong: rgb(0 0 0 / 0.08);
   --color-accent-hover: #3a2fae;
   --color-panel-hover: #000000;
-  --color-busy: #e6e6e2;
+  --color-busy: #d9d9d3;
   --color-highlight: #fbe9a6;
 
   --radius-card: 1rem;

@@ -38,3 +38,31 @@ Exemplos: `daily dias úteis 9h30 ~15m #trab`, `pagar condomínio todo dia 10 #c
 - A lógica fica em `server/calendarEvents.ts` (autenticação, download com limite de tamanho e timeout, bloqueio de endereços internos) e `src/lib/calendar/expandIcs.ts` (lê o .ics, expande recorrências e exceções e converte pro fuso do usuário, com testes).
 - Usa as mesmas variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`, que já estão na Vercel.
 
+
+## Claude e Codex (MCP)
+
+O Organiday tem um servidor MCP em `/api/mcp`. Com ele, o Claude (Code, desktop e web) e o Codex criam e leem suas tarefas. Exemplo: no meio de um debug, você diz "abre uma tarefa amanhã às 10h no trabalho pra resolver esse bug", e a tarefa aparece no app com o contexto nas notas.
+
+**Ferramentas:** `list_areas`, `create_task`, `list_tasks`, `update_task`, `complete_task`. A área aceita o nome ou o começo dele (`trabalho`, `casa`), e "hoje" segue `ORGANIDAY_TIME_ZONE` (padrão `America/Sao_Paulo`).
+
+**Login:** OAuth 2.1 usando o próprio Supabase Auth. O cliente recebe um token normal do usuário, então tudo passa pelo RLS.
+
+### Configurar uma vez no Supabase
+
+1. **Authentication → OAuth Server:** ligue o servidor OAuth, ponha `/oauth/consent` em *Authorization path* e ligue o *Dynamic client registration* (o Claude e o Codex se registram sozinhos).
+2. **Authentication → URL Configuration:** o *Site URL* precisa ser o endereço de produção, porque a tela de consentimento é aberta nele.
+
+### Conectar
+
+- **Claude Code:** `claude mcp add --transport http organiday https://SEU-APP/api/mcp`, depois `/mcp` → organiday → *Authenticate*.
+- **Claude desktop/web:** Configurações → Conectores → *Adicionar conector personalizado* → `https://SEU-APP/api/mcp`.
+- **Codex:** `codex mcp add organiday --url https://SEU-APP/api/mcp`, depois `codex mcp login organiday`.
+
+O navegador abre o Organiday, você entra (se precisar) e clica em **Permitir**.
+
+### Arquivos
+
+- `server/mcp/handleMcp.ts`: ferramentas, checagem do token e metadados do recurso protegido.
+- `api/mcp.ts` e `api/oauth-protected-resource.ts`: funções da Vercel. O `vercel.json` aponta `/.well-known/oauth-protected-resource` pra segunda.
+- `src/pages/OAuthConsentPage.tsx`: tela de Permitir/Não permitir. Depois do login, o `App.tsx` traz a pessoa de volta pra ela.
+- No `npm run dev`, o Vite serve as mesmas rotas.

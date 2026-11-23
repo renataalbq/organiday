@@ -1,150 +1,446 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react'
 import { sendMagicLink, signInWithGoogle } from '../auth/SessionProvider'
-import { Icon, type IconName } from '../components/Icon'
-import { Logo } from '../components/Logo'
-import { ParsedChips } from '../components/ParsedChips'
-import { APP_NAME } from '../config'
 import { translateAuthError } from '../lib/auth/translateAuthError'
-import { parseQuickAdd } from '../lib/quickAdd/parseQuickAdd'
+import { buildDemoDay, parseHourInput } from '../lib/landing/demoDay'
+import { savePendingSignup } from '../lib/landing/pendingSignup'
+import { parseQuickAdd, type QuickAddToken } from '../lib/quickAdd/parseQuickAdd'
 import type { Area } from '../types'
 
-const FEATURES: { icon: IconName; title: string; text: string }[] = [
-  {
-    icon: 'plus',
-    title: 'Adicionar rápido',
-    text: 'Escreva do jeito que você fala. "pagar condomínio todo dia 10 #casa" já vira tarefa com data, repetição e área.',
-  },
-  {
-    icon: 'flag',
-    title: 'Prioridades no automático',
-    text: 'Prazo, prioridade e contexto viram uma nota. Você abre o app e vê as 3 coisas que importam hoje.',
-  },
-  {
-    icon: 'copy',
-    title: 'Resumo pra reunião',
-    text: 'O que você já fez e vai fazer, com impedimentos. Pronto pra daily ou qualquer conversa.',
-  },
-  {
-    icon: 'study',
-    title: 'Estudos com ritmo',
-    text: 'Cursos e livros com progresso, prazo e quantas aulas por semana faltam pra chegar lá.',
-  },
+const DEFAULT_TEXT = 'enviar proposta pro cliente 15h #trab !alta'
+
+const EXAMPLES = [
+  'pagar condomínio todo dia 10 #casa',
+  'reunião de alinhamento dias úteis 10h ~30m #trab',
+  'academia dias úteis 7h ~1h #pessoal',
+  'ler 20 páginas sexta 21h ~30m #estudos',
 ]
 
 // áreas de exemplo pra demonstração do adicionar rápido na página de entrada
 const DEMO_AREAS: Area[] = [
   { id: 'demo-work', name: 'Trabalho', color: '#5B4CDB', kind: 'work', position: 0 },
-  { id: 'demo-home', name: 'Casa', color: '#B97A1C', kind: 'life', position: 1 },
-  { id: 'demo-study', name: 'Estudos', color: '#1E8A85', kind: 'life', position: 2 },
+  { id: 'demo-personal', name: 'Pessoal', color: '#C8577A', kind: 'life', position: 1 },
+  { id: 'demo-home', name: 'Casa', color: '#B97A1C', kind: 'life', position: 2 },
+  { id: 'demo-study', name: 'Estudos', color: '#1E8A85', kind: 'life', position: 3 },
 ]
 
 export function LoginPage() {
-  return (
-    <div className="min-h-dvh bg-canvas">
-      <div className="mx-auto max-w-[1144px] px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-16 sm:px-8">
-        <header className="flex items-center justify-between py-2">
-          <Logo markSize={32} className="text-xl" />
-          <a href="#entrar" className="button-outline px-3.5 py-2 lg:hidden">
-            Entrar
-          </a>
-        </header>
+  const [text, setText] = useState(DEFAULT_TEXT)
+  const [name, setName] = useState('')
+  const [start, setStart] = useState('9h')
+  const [end, setEnd] = useState('18h')
 
-        <div className="mt-10 grid gap-10 lg:mt-16 lg:grid-cols-[1fr_400px] lg:gap-20">
-          <section>
-            <p className="eyebrow">Trabalho · casa · estudos</p>
-            <h1 className="mt-4 font-display text-[2.8rem] leading-[0.98] font-bold tracking-[-0.045em] sm:text-[4.25rem]">
-              Seu dia inteiro,
-              <br />
-              <span className="text-accent">num lugar só.</span>
-            </h1>
-            <p className="mt-6 max-w-[540px] text-lg leading-relaxed text-ink-soft">
-              O {APP_NAME} junta tarefas, reuniões, decisões e estudos, calcula quanto tempo livre sobra no expediente e
-              mostra o que fazer primeiro. Sem montar sistema nenhum.
-            </p>
-
-            <QuickAddDemo />
-
-            <div className="mt-10 lg:hidden" id="entrar">
-              <LoginCard />
-            </div>
-          </section>
-
-          <aside className="hidden lg:block">
-            <div className="sticky top-8">
-              <LoginCard />
-            </div>
-          </aside>
-        </div>
-
-        <section className="mt-16 grid gap-4 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
-          {FEATURES.map((feature) => (
-            <article key={feature.title} className="card p-6">
-              <span className="grid size-10 place-items-center rounded-lg bg-accent-soft text-accent">
-                <Icon name={feature.icon} size={19} />
-              </span>
-              <h2 className="mt-5 font-display text-lg font-semibold tracking-[-0.01em]">{feature.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink-soft">{feature.text}</p>
-            </article>
-          ))}
-        </section>
-
-        <footer className="mt-14 flex flex-col gap-3 rounded-[1.25rem] bg-panel p-7 text-white sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-display text-xl font-bold tracking-[-0.01em]">Instale no celular</p>
-            <p className="mt-1.5 text-sm text-white/75">
-              Android: menu ⋮ → Instalar app. iPhone: Compartilhar → Adicionar à Tela de Início.
-            </p>
-          </div>
-          <p className="text-sm text-[#c9c2ff]">Funciona como app, sem loja.</p>
-        </footer>
-      </div>
-    </div>
-  )
-}
-
-/** O adicionar rápido de verdade, com áreas de exemplo: quem chega já vê o que ele entende. */
-function QuickAddDemo() {
-  const [text, setText] = useState('daily dias úteis 9h30 ~15m #trab')
   const parsed = useMemo(() => (text.trim() ? parseQuickAdd(text, DEMO_AREAS) : null), [text])
+  const workdayStart = parseHourInput(start)
+  const workdayEnd = parseHourInput(end)
+  const workdayValid = Boolean(workdayStart && workdayEnd && workdayStart < workdayEnd)
 
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
-    document.getElementById('entrar')?.scrollIntoView({ behavior: 'smooth' })
-    document.querySelector<HTMLInputElement>('#entrar input[type="email"], aside input[type="email"]')?.focus()
-  }
+  // guardado antes do login; aplicado quando a pessoa voltar logada (ver usePendingSignup)
+  const rememberAnswers = () =>
+    savePendingSignup({
+      displayName: name.trim() || null,
+      workdayStart: workdayValid && (start !== '9h' || end !== '18h') ? workdayStart : null,
+      workdayEnd: workdayValid && (start !== '9h' || end !== '18h') ? workdayEnd : null,
+      firstTask: text.trim() && text.trim() !== DEFAULT_TEXT ? text.trim() : null,
+    })
 
   return (
-    <div className="mt-9 max-w-[580px]">
-      <form
-        onSubmit={handleSubmit}
-        className="flex items-center gap-2 rounded-full border-2 border-ink bg-card py-1.5 pr-1.5 pl-5"
-      >
-        <Icon name="plus" size={20} />
-        <input
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-          aria-label="Experimente o adicionar rápido"
-          className="min-w-0 flex-1 bg-transparent py-2 text-base outline-none sm:text-[17px]"
-        />
-        <button
-          type="submit"
-          className="shrink-0 rounded-full bg-accent px-5 py-2.5 text-[15px] font-semibold text-white hover:bg-accent-ink"
-        >
-          Adicionar
-        </button>
-      </form>
-      {parsed && <ParsedChips tokens={parsed.tokens} className="mt-3 px-5" />}
+    <div className="min-h-dvh bg-canvas text-ink">
+      <Header />
+      <Hero text={text} onTextChange={setText} parsed={parsed} />
+      <DaySection
+        start={workdayValid ? workdayStart! : '09:00'}
+        end={workdayValid ? workdayEnd! : '18:00'}
+        parsed={parsed}
+      />
+      <ElsewhereSection />
+      <ClaudeSection />
+      <MomentsSection />
+      <SignUpSection
+        name={name}
+        onNameChange={setName}
+        start={start}
+        onStartChange={setStart}
+        end={end}
+        onEndChange={setEnd}
+        typedTitle={text.trim() !== DEFAULT_TEXT ? (parsed?.title ?? null) : null}
+        onBeforeLogin={rememberAnswers}
+      />
+      <Footer />
     </div>
   )
 }
 
-function LoginCard() {
+const shell = 'mx-auto w-full max-w-[1440px] px-5 sm:px-10 lg:px-[72px]'
+const mono = 'font-mono text-[11px] tracking-[0.08em] uppercase'
+
+function Header() {
+  return (
+    <header className="border-b border-ink/80 pt-[env(safe-area-inset-top)]">
+      <div className={`${shell} flex h-[66px] items-center justify-between`}>
+        <span className="text-[17px] font-semibold tracking-[-0.02em]">organiday</span>
+        <span className="hidden font-mono text-[11px] text-ink-soft sm:block">trabalho · casa · estudos</span>
+        <a href="#entrar" className="border-b border-ink text-sm font-medium">
+          Entrar →
+        </a>
+      </div>
+    </header>
+  )
+}
+
+/* ─── Herói: o adicionar rápido de verdade ─────────────────────────────── */
+
+const FIELD_LABEL: Partial<Record<QuickAddToken['kind'], string>> = {
+  kind: 'Tipo',
+  date: 'Quando',
+  time: 'Horário',
+  duration: 'Duração',
+  recurrence: 'Repete',
+  area: 'Área',
+  unknownArea: 'Área',
+  priority: 'Prioridade',
+}
+
+const FIELD_ORDER: QuickAddToken['kind'][] = ['kind', 'date', 'time', 'duration', 'recurrence', 'area', 'unknownArea', 'priority']
+
+function fieldTone(token: QuickAddToken): string {
+  if (token.kind === 'area') return 'text-accent border-accent'
+  if (token.kind === 'unknownArea') return 'text-ink-faint border-ink-faint'
+  if (token.kind === 'priority' && /alta|urgente/.test(token.label)) return 'text-alert border-alert'
+  return 'border-ink-faint'
+}
+
+function Hero({
+  text,
+  onTextChange,
+  parsed,
+}: {
+  text: string
+  onTextChange: (text: string) => void
+  parsed: ReturnType<typeof parseQuickAdd> | null
+}) {
+  const tokens = [...(parsed?.tokens ?? [])].sort((a, b) => FIELD_ORDER.indexOf(a.kind) - FIELD_ORDER.indexOf(b.kind))
+
+  return (
+    <section className={`${shell} pt-14 sm:pt-[72px]`}>
+      <label htmlFor="quick-add-demo" className={`${mono} text-ink-soft`}>
+        Escreva qualquer coisa aqui embaixo ↓
+      </label>
+      <input
+        id="quick-add-demo"
+        value={text}
+        onChange={(event) => onTextChange(event.target.value)}
+        spellCheck={false}
+        autoComplete="off"
+        className="mt-7 block w-full border-b-2 border-ink bg-transparent pb-3 text-[clamp(2.3rem,6.2vw,5.4rem)] leading-[1.1] font-semibold tracking-[-0.045em] outline-none placeholder:text-ink-faint sm:mt-9"
+        placeholder="o que precisa fazer?"
+      />
+
+      <dl className="mt-7 flex min-h-[78px] flex-wrap gap-x-9 gap-y-5" aria-live="polite">
+        {parsed && (
+          <Field label="Tarefa" className="border-ink">
+            {parsed.title || '—'}
+          </Field>
+        )}
+        {tokens.map((token, index) => (
+          <Field key={`${token.kind}-${index}`} label={FIELD_LABEL[token.kind] ?? ''} className={fieldTone(token)}>
+            {token.kind === 'priority' ? token.label.replace('prioridade ', '') : token.label}
+          </Field>
+        ))}
+      </dl>
+
+      <div className="mt-9 flex flex-wrap items-baseline gap-x-7 gap-y-3 text-[13px]">
+        <span className="text-ink-soft">ou tente:</span>
+        {EXAMPLES.map((example) => (
+          <button
+            key={example}
+            type="button"
+            onClick={() => onTextChange(example)}
+            className="border-b border-ink-faint text-left hover:border-ink"
+          >
+            {example}
+          </button>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function Field({ label, className, children }: { label: string; className: string; children: ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <dt className={`${mono} text-[10px] text-ink-soft`}>{label}</dt>
+      <dd className={`mt-2 border-b-2 pb-1 text-[clamp(1.25rem,2vw,1.65rem)] leading-tight font-medium tracking-[-0.02em] ${className}`}>
+        {children}
+      </dd>
+    </div>
+  )
+}
+
+/* ─── O dia de exemplo ─────────────────────────────────────────────────── */
+
+function DaySection({
+  start,
+  end,
+  parsed,
+}: {
+  start: string
+  end: string
+  parsed: ReturnType<typeof parseQuickAdd> | null
+}) {
+  const [today] = useState(() => new Date().toLocaleDateString('en-CA'))
+  const isToday = !parsed?.dueDate || parsed.dueDate === today
+  const day = buildDemoDay(
+    start,
+    end,
+    parsed?.dueTime && isToday ? { time: parsed.dueTime, durationMinutes: parsed.durationMinutes } : null,
+  )
+  const hours = Array.from({ length: day.endHour - day.startHour + 1 }, (_, index) => day.startHour + index)
+
+  return (
+    <section className={`${shell} pt-16 pb-16 sm:pt-20 sm:pb-[88px]`}>
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+        <h2 className="text-[clamp(1.3rem,2vw,1.75rem)] font-medium tracking-[-0.02em]">
+          Seu dia hoje, das {formatHour(start)} às {formatHour(end)}
+        </h2>
+        <p className="flex items-baseline gap-2">
+          <span className="text-[clamp(4rem,9vw,8rem)] leading-[0.85] font-normal tracking-[-0.05em] text-accent tabular-nums">
+            {day.freeLabel}
+          </span>
+          <span className="text-[clamp(1.3rem,2vw,1.75rem)] font-medium tracking-[-0.02em]">livres</span>
+        </p>
+      </div>
+
+      <div className="relative mt-8 h-11 border-y border-ink">
+        {day.blocks.map((block, index) => (
+          <span
+            key={index}
+            className={`absolute inset-y-0 transition-all duration-300 ${block.kind === 'typed' ? 'bg-accent' : 'bg-busy'}`}
+            style={{ left: `${block.left}%`, width: `${block.width}%` }}
+          />
+        ))}
+      </div>
+      <div className="mt-3 flex justify-between font-mono text-[10px] text-ink-soft">
+        {hours.map((hour) => (
+          <span key={hour}>{String(hour).padStart(2, '0')}</span>
+        ))}
+      </div>
+      <p className="mt-4 text-[13px] text-ink-soft">
+        Cinza: uma reunião que veio da sua agenda e o almoço. Colorido: o que você acabou de escrever.
+        {parsed?.dueTime && !isToday && ' (A sua tarefa ficou pra outro dia, então não entra aqui.)'}
+      </p>
+    </section>
+  )
+}
+
+const formatHour = (time: string) => {
+  const [hours, minutes] = time.split(':').map(Number)
+  return minutes ? `${hours}h${String(minutes).padStart(2, '0')}` : `${hours}h`
+}
+
+/* ─── O que está em outro lugar ────────────────────────────────────────── */
+
+const MESS: { text: string; style: CSSProperties; className?: string }[] = [
+  { text: '[JIRA-482] Você foi atribuída: revisar relatório do mês', style: { left: '0%', top: 0, rotate: '-1deg' }, className: 'font-mono text-[11px]' },
+  { text: '+3 comentários', style: { left: '48%', top: 18 }, className: 'font-mono text-[10px] text-ink-soft' },
+  { text: 'Convite: Reunião de equipe · seg 9h30', style: { left: '14%', top: 40 }, className: 'text-[15px] font-medium' },
+  { text: 'Aceitar · Talvez · Recusar', style: { left: '68%', top: 62, rotate: '-4deg' }, className: 'bg-busy px-1.5 font-mono text-[10px]' },
+  { text: 'Trello · cartão movido para “Fazendo”: atualizar planilha de custos', style: { left: '2%', top: 86 }, className: 'font-mono text-[10px]' },
+  { text: 'Codex: “posso abrir uma issue?”', style: { left: '58%', top: 100 }, className: 'text-[12px] italic' },
+  { text: 'Outlook: Call com cliente, 16h', style: { left: '34%', top: 120 }, className: 'text-[17px] font-semibold' },
+  { text: 'lembrar: pagar boleto', style: { left: '0%', top: 140, rotate: '-6deg' }, className: 'text-[12px] italic' },
+  { text: 'Outlook: lembrete em 15 min', style: { left: '20%', top: 156 }, className: 'font-mono text-[10px] text-ink-soft' },
+  { text: 'RE: RE: RE: proposta revisada (v3 final)', style: { left: '54%', top: 170 }, className: 'text-[11px]' },
+  { text: 'Asana · Lembrete: preparar apresentação', style: { left: '7%', top: 190 }, className: 'bg-busy px-1.5 font-mono text-[10px]' },
+  { text: '@renata pode ver isso hoje?', style: { left: '41%', top: 214 }, className: 'font-mono text-[10px]' },
+  { text: 'Claude: “…tem um erro nesse cálculo. Quer que eu…”', style: { left: '11%', top: 236 }, className: 'text-[12px] italic' },
+  { text: 'Slack (12)', style: { left: '67%', top: 246 }, className: 'bg-busy px-1.5 font-mono text-[10px]' },
+  { text: 'ligar pro fornecedor', style: { left: '0%', top: 266 }, className: 'text-[12px] line-through' },
+  { text: 'Jira: 2 tarefas vencem amanhã', style: { left: '30%', top: 274 }, className: 'font-mono text-[10px]' },
+  { text: 'Google Agenda: Alinhamento trimestral', style: { left: '50%', top: 292 }, className: 'text-[12px]' },
+  { text: 'post-it: mandar orçamento até sexta?', style: { left: '3%', top: 310 }, className: 'bg-busy px-1.5 font-mono text-[10px]' },
+  { text: 'Trello: 4 cartões atrasados', style: { left: '25%', top: 330 }, className: 'text-[17px] font-semibold' },
+  { text: 'notificações não lidas', style: { left: '67%', top: 340 }, className: 'font-mono text-[10px] text-ink-soft' },
+  { text: 'anotei em algum lugar…', style: { left: '4%', top: 364, rotate: '-3deg' }, className: 'text-[11px] italic' },
+  { text: 'Asana · você foi mencionada', style: { left: '42%', top: 368 }, className: 'font-mono text-[10px]' },
+  { text: 'Reunião às 9h30 ou 10h??', style: { left: '37%', top: 390 }, className: 'bg-busy px-1.5 text-[12px]' },
+  { text: 'Jira · status alterado: Em revisão → A fazer', style: { left: '0%', top: 412 }, className: 'font-mono text-[10px]' },
+]
+
+const ONE_DAY: { time: string; title: string; source: string; highlight?: boolean }[] = [
+  { time: '09:30', title: 'reunião de equipe', source: 'google agenda' },
+  { time: '11:00', title: 'corrigir esse erro', source: 'claude', highlight: true },
+  { time: '14:00', title: 'revisar relatório do mês', source: 'jira' },
+  { time: '15:00', title: 'atualizar planilha de custos', source: 'trello' },
+  { time: '16:00', title: 'call com cliente', source: 'outlook' },
+  { time: '17:00', title: 'preparar apresentação', source: 'asana' },
+]
+
+function ElsewhereSection() {
+  return (
+    <section className="border-t border-ink/80">
+      <div className={`${shell} pt-16 pb-9 sm:pt-[72px]`}>
+        <p className={`${mono} text-ink-soft`}>Você nem precisa escrever tudo</p>
+        <h2 className="mt-4 text-[clamp(2.4rem,5vw,4.3rem)] leading-[1] font-semibold tracking-[-0.045em]">
+          O que já está em outro lugar
+          <br />
+          <span className="text-accent">chega sozinho.</span>
+        </h2>
+      </div>
+
+      <div className="border-y border-ink/80">
+        <div className={`${shell} grid md:grid-cols-2`}>
+          <div className="hidden border-r border-ink/80 py-9 pr-10 md:block">
+            <p className={`${mono} text-ink-soft`}>Antes · abas demais, cabeça cheia</p>
+            <div className="relative mt-6 h-[430px] overflow-hidden text-ink" aria-hidden>
+              {MESS.map((item) => (
+                <span key={item.text} className={`absolute whitespace-nowrap ${item.className ?? ''}`} style={item.style}>
+                  {item.text}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="py-9 md:pl-[72px]">
+            <p className={`${mono} text-accent`}>Depois · um dia só</p>
+            <ol className="mt-6">
+              {ONE_DAY.map((item) => (
+                <li key={item.time} className="flex items-baseline gap-6 border-b border-line-strong py-4 sm:gap-10">
+                  <span className="font-mono text-[13px] text-ink-soft">{item.time}</span>
+                  <span className={`flex-1 text-[17px] font-medium ${item.highlight ? 'text-accent' : ''}`}>
+                    {item.title}
+                  </span>
+                  <span className={`font-mono text-[10px] ${item.highlight ? 'text-accent' : 'text-ink-soft'}`}>
+                    {item.source}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <p className={`${shell} max-w-[1440px] py-8 text-[14px] leading-relaxed text-ink-soft`}>
+        <span className="block max-w-[560px]">
+          Reuniões do <b className="font-semibold text-ink">Google Agenda</b> e do{' '}
+          <b className="font-semibold text-ink">Outlook</b> entram sozinhas. O que te atribuírem no{' '}
+          <b className="font-semibold text-ink">Jira</b>, no <b className="font-semibold text-ink">Trello</b> ou no{' '}
+          <b className="font-semibold text-ink">Asana</b> vai chegar pronto também (em breve), e você só escolhe a hora
+          de puxar.
+        </span>
+      </p>
+    </section>
+  )
+}
+
+/* ─── Claude e Codex ───────────────────────────────────────────────────── */
+
+function ClaudeSection() {
+  return (
+    <section className="bg-accent text-white">
+      <div className={`${shell} pt-16 pb-14 sm:pt-[88px]`}>
+        <p className={`${mono} text-white/75`}>De dentro do Claude e do Codex</p>
+        <blockquote className="mt-6 max-w-[980px] text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.1] font-medium tracking-[-0.035em]">
+          “Claude, abre uma tarefa pra mim amanhã às 10h, no trabalho, pra corrigir esse erro.”
+        </blockquote>
+        <dl className="mt-8 flex flex-wrap gap-x-9 gap-y-5">
+          {[
+            ['Tarefa', 'corrigir esse erro'],
+            ['Quando', 'amanhã'],
+            ['Horário', '10h'],
+            ['Área', 'Trabalho'],
+          ].map(([label, value]) => (
+            <div key={label}>
+              <dt className={`${mono} text-[10px] text-white/75`}>{label}</dt>
+              <dd className="mt-2 border-b-2 border-white/80 pb-1 text-[clamp(1.25rem,2vw,1.65rem)] font-medium tracking-[-0.02em]">
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-white/30 pt-6">
+          <p className="text-[15px] font-medium">✓ Criada no seu Organiday. Você nem saiu da conversa.</p>
+          <p className="font-mono text-[11px] text-white/75">conecta via MCP em um clique</p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─── Os momentos do dia ───────────────────────────────────────────────── */
+
+const MOMENTS = [
+  {
+    time: '08:50',
+    title: 'Você abre. Três coisas. Só.',
+    text: 'Prazo, prioridade e área escolhem por você o que importa hoje.',
+  },
+  {
+    time: '14:00',
+    title: 'Uma dúvida vira decisão.',
+    text: 'Escreva terminando com “?” e ela fica guardada em Pra decidir até você bater o martelo. Nada fica perdido no meio das tarefas.',
+  },
+  {
+    time: '18:00',
+    title: 'Já fiz. Vou fazer.',
+    text: 'O que você fez, o que vai fazer e os impedimentos, num texto pronto pra mandar pra quem precisar saber. Você não esquece de nada.',
+  },
+  {
+    time: '21:00',
+    title: 'Mais uma aula. No ritmo.',
+    text: 'Curso, livro ou certificação: você marca o avanço e ele te diz se ainda dá tempo de terminar no prazo que você escolheu.',
+  },
+]
+
+function MomentsSection() {
+  return (
+    <section>
+      {MOMENTS.map((moment) => (
+        <div key={moment.time} className="border-b border-ink/80">
+          <div className={`${shell} grid gap-3 py-10 sm:py-12 md:grid-cols-[230px_1fr_380px] md:gap-8`}>
+            <span className="font-mono text-[clamp(2.2rem,3.4vw,3rem)] leading-none text-accent">{moment.time}</span>
+            <h3 className="text-[clamp(1.9rem,3.3vw,2.9rem)] leading-[1.05] font-semibold tracking-[-0.045em]">
+              {moment.title}
+            </h3>
+            <p className="text-[14px] leading-relaxed text-ink-soft md:pt-5">{moment.text}</p>
+          </div>
+        </div>
+      ))}
+    </section>
+  )
+}
+
+/* ─── Cadastro ─────────────────────────────────────────────────────────── */
+
+function SignUpSection({
+  name,
+  onNameChange,
+  start,
+  onStartChange,
+  end,
+  onEndChange,
+  typedTitle,
+  onBeforeLogin,
+}: {
+  name: string
+  onNameChange: (value: string) => void
+  start: string
+  onStartChange: (value: string) => void
+  end: string
+  onEndChange: (value: string) => void
+  typedTitle: string | null
+  onBeforeLogin: () => void
+}) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
+  const handleGoogle = () => {
+    onBeforeLogin()
+    signInWithGoogle()
+  }
+
   const handleMagicLink = async (event: FormEvent) => {
     event.preventDefault()
+    onBeforeLogin()
     setStatus('sending')
     const { error } = await sendMagicLink(email)
     if (error) {
@@ -155,43 +451,95 @@ function LoginCard() {
     }
   }
 
+  const inline =
+    'border-b-2 border-white/80 bg-transparent px-2 text-center outline-none placeholder:text-white/45 focus:border-white'
+
   return (
-    <div className="rounded-[1.25rem] border border-line bg-card p-7 shadow-[0_24px_60px_-28px_rgba(0,0,0,.22)] sm:p-8">
-      <h2 className="font-display text-[1.7rem] font-bold tracking-[-0.02em]">Entrar</h2>
-      <p className="mt-1 text-sm text-ink-soft">Cada conta só enxerga os próprios dados.</p>
-
-      <button type="button" onClick={() => signInWithGoogle()} className="button-dark mt-6 w-full py-3 text-[15px]">
-        <Icon name="google" size={17} /> Continuar com Google
-      </button>
-
-      <div className="my-5 flex items-center gap-3 text-xs text-ink-soft">
-        <span className="h-px flex-1 bg-line" /> ou receba um link por e-mail <span className="h-px flex-1 bg-line" />
-      </div>
-
-      {status === 'sent' ? (
-        <p className="rounded-xl bg-accent-soft p-3.5 text-sm text-accent-ink">
-          Link enviado para {email}. Abra o e-mail neste aparelho para entrar.
+    <section id="entrar" className="scroll-mt-4 bg-[#19191b] text-[#f4f3ef]">
+      <div className={`${shell} pt-20 pb-16 sm:pt-[104px]`}>
+        <p className="max-w-[1000px] text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.35] font-medium tracking-[-0.035em]">
+          Me chama de{' '}
+          <input
+            value={name}
+            onChange={(event) => onNameChange(event.target.value)}
+            placeholder="seu nome"
+            aria-label="Seu nome"
+            maxLength={40}
+            autoComplete="given-name"
+            className={`${inline} w-[7.5ch] text-left text-white/90 placeholder:text-white/50`}
+          />
+          , meu dia começa às{' '}
+          <input
+            value={start}
+            onChange={(event) => onStartChange(event.target.value)}
+            aria-label="Começo do expediente"
+            className={`${inline} w-[3.2ch] text-[#c6bfff]`}
+          />{' '}
+          e termina às{' '}
+          <input
+            value={end}
+            onChange={(event) => onEndChange(event.target.value)}
+            aria-label="Fim do expediente"
+            className={`${inline} w-[3.2ch] text-[#c6bfff]`}
+          />
+          .
         </p>
-      ) : (
-        <form onSubmit={handleMagicLink} className="flex flex-col gap-3">
-          <label>
-            <span className="label">E-mail</span>
-            <input
-              type="email"
-              required
-              autoComplete="email"
-              className="field py-3"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </label>
-          <button type="submit" className="button-outline py-3 text-[15px]" disabled={status === 'sending'}>
-            {status === 'sending' ? 'Enviando…' : 'Enviar link de acesso'}
+
+        <div className="mt-12 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
+          <button
+            type="button"
+            onClick={handleGoogle}
+            className="w-fit rounded-full bg-[#f4f3ef] px-7 py-3.5 text-[15px] font-semibold text-[#19191b] transition-colors hover:bg-white"
+          >
+            Começar com Google →
           </button>
-          {status === 'error' && <p className="text-sm font-medium text-alert">{errorMessage}</p>}
-        </form>
-      )}
-    </div>
+          <span className="text-[13px] text-white/60">ou</span>
+          {status === 'sent' ? (
+            <p className="text-[14px] text-[#c6bfff]">Link enviado para {email}. Abra o e-mail neste aparelho.</p>
+          ) : (
+            <form onSubmit={handleMagicLink} className="flex items-center gap-3">
+              <input
+                type="email"
+                required
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="receber link em seu@email.com"
+                aria-label="E-mail"
+                className="w-[min(100%,22rem)] border-b border-white/40 bg-transparent py-2 text-[15px] outline-none placeholder:text-white/55 focus:border-white"
+              />
+              <button
+                type="submit"
+                disabled={status === 'sending'}
+                aria-label="Enviar link de acesso"
+                className="grid size-11 shrink-0 place-items-center rounded-full border border-white/80 transition-colors hover:bg-white hover:text-[#19191b] disabled:opacity-50"
+              >
+                →
+              </button>
+            </form>
+          )}
+        </div>
+        {status === 'error' && <p className="mt-3 text-sm font-medium text-[#ff8f84]">{errorMessage}</p>}
+
+        <p className="mt-9 font-mono text-[11px] text-white/60">
+          {typedTitle
+            ? `“${typedTitle}” já entra como sua primeira tarefa.`
+            : 'O que você escrever lá em cima já entra como sua primeira tarefa.'}
+        </p>
+      </div>
+    </section>
+  )
+}
+
+function Footer() {
+  return (
+    <footer className="bg-[#19191b] pb-[env(safe-area-inset-bottom)] text-white/60">
+      <div
+        className={`${shell} flex flex-col gap-2 border-t border-white/15 py-6 font-mono text-[10px] sm:flex-row sm:justify-between`}
+      >
+        <span>Instala como app: Android ⋮ → Instalar · iPhone Compartilhar → Tela de Início</span>
+        <span>Cada conta só enxerga os próprios dados.</span>
+      </div>
+    </footer>
   )
 }
