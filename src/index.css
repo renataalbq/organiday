@@ -66,8 +66,34 @@
 }
 
 @layer components {
+  /* 16px no celular: abaixo disso o iOS dá zoom ao focar o campo */
   .field {
-    @apply w-full rounded-xl border border-line bg-card px-3 py-2.5 text-[15px] outline-none transition-colors placeholder:text-ink-faint focus:border-lilac;
+    @apply block w-full min-w-0 rounded-xl border border-line bg-card px-3 py-2.5 text-base outline-none transition-colors placeholder:text-ink-faint focus:border-lilac sm:text-[15px];
+  }
+
+  /* data e horário nativos do iOS/Android têm largura mínima própria e
+     invadem a coluna vizinha: tira a aparência nativa e deixa encolher */
+  select.field {
+    min-height: 2.875rem;
+  }
+
+  .field[type='date'],
+  .field[type='time'] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-height: 2.875rem;
+    line-height: 1.5rem;
+  }
+
+  .field::-webkit-date-and-time-value {
+    text-align: left;
+    min-height: 1.5rem;
+  }
+
+  .field[type='date']::-webkit-calendar-picker-indicator,
+  .field[type='time']::-webkit-calendar-picker-indicator {
+    opacity: 0.55;
+    cursor: pointer;
   }
 
   .label {

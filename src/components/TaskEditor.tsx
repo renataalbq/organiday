@@ -14,6 +14,7 @@ import {
   type TaskKind,
 } from '../types'
 import { Icon } from './Icon'
+import { prefersAutoFocus } from '../lib/device'
 import { Sheet } from './Sheet'
 
 interface TaskEditorApi {
@@ -125,27 +126,55 @@ function TaskEditorDialog({ target, onClose }: { target: EditorTarget; onClose: 
   const isSaving = createTask.isPending || updateTask.isPending
 
   return (
-    <Sheet label={target.mode === 'edit' ? 'Editar item' : 'Novo item'} onClose={onClose} onSubmit={handleSubmit}>
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex gap-1 rounded-full bg-canvas p-1">
-          {(Object.keys(KIND_LABEL) as TaskKind[]).map((kind) => (
-            <button
-              key={kind}
-              type="button"
-              onClick={() => set('kind', kind)}
-              className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${draft.kind === kind ? 'bg-card text-ink shadow-sm' : 'text-ink-soft'}`}
-            >
-              {KIND_LABEL[kind]}
-            </button>
-          ))}
+    <Sheet
+      label={target.mode === 'edit' ? 'Editar item' : 'Novo item'}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      header={
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 gap-1 overflow-x-auto rounded-full bg-canvas p-1">
+            {(Object.keys(KIND_LABEL) as TaskKind[]).map((kind) => (
+              <button
+                key={kind}
+                type="button"
+                onClick={() => set('kind', kind)}
+                className={`shrink-0 rounded-full px-3 py-1 text-sm font-semibold transition-colors ${draft.kind === kind ? 'bg-card text-ink shadow-sm' : 'text-ink-soft'}`}
+              >
+                {KIND_LABEL[kind]}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={onClose} className="button-quiet p-2" aria-label="Fechar">
+            <Icon name="close" />
+          </button>
         </div>
-        <button type="button" onClick={onClose} className="button-quiet p-2" aria-label="Fechar">
-          <Icon name="close" />
-        </button>
-      </div>
+      }
+      footer={
+        <>
+          {error && <p className="mb-2 text-sm font-semibold text-alert">{error}</p>}
 
+          <div className="flex items-center justify-between gap-2">
+            {target.mode === 'edit' ? (
+              <button type="button" onClick={handleDelete} className="button-quiet text-alert hover:text-alert">
+                <Icon name="trash" size={16} /> Excluir
+              </button>
+            ) : (
+              <span />
+            )}
+            <div className="flex gap-2">
+              <button type="button" onClick={onClose} className="button-quiet">
+                Cancelar
+              </button>
+              <button type="submit" className="button-primary" disabled={isSaving}>
+                {target.mode === 'edit' ? 'Salvar' : 'Criar'}
+              </button>
+            </div>
+          </div>
+        </>
+      }
+    >
       <input
-        autoFocus
+        autoFocus={target.mode === 'create' && prefersAutoFocus()}
         value={draft.title}
         onChange={(event) => set('title', event.target.value)}
         placeholder={
@@ -155,10 +184,10 @@ function TaskEditorDialog({ target, onClose }: { target: EditorTarget; onClose: 
               ? 'Nome da reunião'
               : 'O que precisa ser feito?'
         }
-        className="mb-4 w-full bg-transparent font-display text-2xl font-bold tracking-tight outline-none placeholder:text-ink-faint"
+        className="mb-4 w-full min-w-0 bg-transparent font-display text-2xl font-bold tracking-tight outline-none placeholder:text-ink-faint"
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 [&>label]:min-w-0">
         <label className="col-span-2 sm:col-span-1">
           <span className="label">Área</span>
           <select className="field" value={draft.areaId} onChange={(event) => set('areaId', event.target.value)}>
@@ -246,26 +275,6 @@ function TaskEditorDialog({ target, onClose }: { target: EditorTarget; onClose: 
           />
         </label>
       </div>
-
-      {error && <p className="mt-3 text-sm font-semibold text-alert">{error}</p>}
-
-      <footer className="mt-5 flex items-center justify-between">
-        {target.mode === 'edit' ? (
-          <button type="button" onClick={handleDelete} className="button-quiet text-alert hover:text-alert">
-            <Icon name="trash" size={16} /> Excluir
-          </button>
-        ) : (
-          <span />
-        )}
-        <div className="flex gap-2">
-          <button type="button" onClick={onClose} className="button-quiet">
-            Cancelar
-          </button>
-          <button type="submit" className="button-primary" disabled={isSaving}>
-            {target.mode === 'edit' ? 'Salvar' : 'Criar'}
-          </button>
-        </div>
-      </footer>
     </Sheet>
   )
 }
