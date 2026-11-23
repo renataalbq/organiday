@@ -11,7 +11,8 @@ Painel pessoal para organizar trabalho, casa, estudos e o dia a dia. Funciona no
 - **Tarefas:** tudo agrupado em atrasadas, hoje, próximas e sem data, ordenado pela priorização automática. Dá pra filtrar por área e por tipo (tarefas, decisões, reuniões). O alfinete fixa uma tarefa nas prioridades de hoje.
 - **Inbox:** o que entrou sem área. Um toque na bolinha colorida move o item pra área certa.
 - **Estudos:** cursos e livros com progresso (+1 aula), prazo e ritmo necessário por semana.
-- **Ajustes:** seu nome, horário de expediente e almoço, e as áreas (cor, nome, se é trabalho).
+- **Ajustes:** seu nome, horário de expediente e almoço, as áreas (cor, nome, se é trabalho), calendários conectados e tema claro/escuro.
+- **Calendários (.ics):** conecte Google Agenda, Outlook ou iCloud pelo link secreto .ics. As reuniões aparecem no Hoje e na Semana e entram na conta do tempo livre. Só leitura.
 
 ### Adicionar rápido
 
@@ -29,3 +30,11 @@ Digite no campo do topo (atalho: `/`) e veja o que foi entendido antes de salvar
 | `reunião`/`call`/`daily`/`1:1` + horário | reunião                                 |
 
 Exemplos: `daily dias úteis 9h30 ~15m #trab`, `pagar condomínio todo dia 10 #casa`, `Qual curso fazer em dezembro?`.
+
+## Calendários conectados
+
+- O link .ics fica na tabela `calendar_feeds` (RLS: só o dono lê). Migration: `supabase/migrations/0005_calendar_feeds.sql`.
+- O navegador não consegue baixar .ics de outro domínio (CORS), então quem baixa é a função `api/calendar-events.ts` da Vercel, com o token do usuário. No `npm run dev`, o Vite serve a mesma rota (plugin em `vite.config.ts`).
+- A lógica fica em `server/calendarEvents.ts` (autenticação, download com limite de tamanho e timeout, bloqueio de endereços internos) e `src/lib/calendar/expandIcs.ts` (lê o .ics, expande recorrências e exceções e converte pro fuso do usuário, com testes).
+- Usa as mesmas variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`, que já estão na Vercel.
+

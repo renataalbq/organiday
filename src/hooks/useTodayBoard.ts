@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useAreas } from '../data/areas'
+import { useCalendarMeetings } from '../data/calendar'
 import { useSettings } from '../data/settings'
 import { useTasks } from '../data/tasks'
 import { buildAttentionItems } from '../lib/attention/buildAttentionItems'
@@ -20,15 +21,19 @@ export function useTodayBoard(runningTaskId: string | null = null) {
   const tasksQuery = useTasks()
   const { areas, areasById, isLoading: areasLoading } = useAreas()
   const { settings } = useSettings()
+  const calendar = useCalendarMeetings(todayISO)
 
   const board = useMemo(() => {
     const allTasks = tasksQuery.data ?? []
     const openTasks = allTasks.filter((task) => task.status === 'open')
     const isDueByToday = (dueDate: string | null) => dueDate !== null && daysFromToday(dueDate, now) <= 0
 
-    const todayMeetings = openTasks
-      .filter((task) => task.kind === 'meeting' && task.due_date === todayISO)
-      .sort((a, b) => a.due_time!.localeCompare(b.due_time!))
+    // reuniões dos calendários conectados (.ics) entram junto, só leitura
+    const calendarToday = calendar.meetings.filter((meeting) => meeting.due_date === todayISO)
+    const todayMeetings = [
+      ...openTasks.filter((task) => task.kind === 'meeting' && task.due_date === todayISO),
+      ...calendarToday,
+    ].sort((a, b) => a.due_time!.localeCompare(b.due_time!))
     const meetingsDoneToday = allTasks.filter(
       (task) => task.kind === 'meeting' && task.status === 'done' && task.due_date === todayISO,
     )
@@ -46,9 +51,10 @@ export function useTodayBoard(runningTaskId: string | null = null) {
       .filter((task) => task.kind === 'task' && task.status === 'done' && completedToday(task))
       .sort((a, b) => (a.completed_at ?? '').localeCompare(b.completed_at ?? ''))
     const openToday = openTasks.filter((task) => task.kind === 'task' && isDueByToday(task.due_date))
-    const timelineEvents = allTasks.filter(
-      (task) => task.due_date === todayISO && task.due_time !== null && task.kind !== 'decision',
-    )
+    const timelineEvents = [
+      ...allTasks.filter((task) => task.due_date === todayISO && task.due_time !== null && task.kind !== 'decision'),
+      ...calendarToday,
+    ]
 
     const workTasksForToday = openTasks.filter(
       (task) =>
@@ -107,7 +113,7 @@ export function useTodayBoard(runningTaskId: string | null = null) {
       dueTodayCount,
       overdueCount,
     }
-  }, [tasksQuery.data, areasById, settings, now, todayISO, runningTaskId])
+  }, [tasksQuery.data, calendar.meetings, areasById, settings, now, todayISO, runningTaskId])
 
   return {
     ...board,

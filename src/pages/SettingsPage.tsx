@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { signOut, useSession } from '../auth/SessionProvider'
+import { CalendarSettings } from '../components/CalendarSettings'
 import { Icon } from '../components/Icon'
 import { PageHeader } from '../components/PageHeader'
 import { useAreas, useCreateArea, useDeleteArea, useUpdateArea } from '../data/areas'
@@ -19,6 +20,7 @@ export function SettingsPage() {
       <div className="space-y-6">
         <WorkdaySettings />
         <AreasSettings />
+        <CalendarSettings />
         <AppearanceSettings />
         <AccountSettings />
       </div>

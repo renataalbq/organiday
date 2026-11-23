@@ -11,8 +11,8 @@ import {
 } from 'react'
 import { useAreas } from '../data/areas'
 import { useCreateTask, useDeleteTask, useUpdateTask } from '../data/tasks'
-import { DEFAULT_MEETING_MINUTES } from '../lib/dayBudget/dayBudget'
-import { addDays, formatRelativeDate, toISODate } from '../lib/dates'
+import { DEFAULT_MEETING_MINUTES, minutesToClock, timeToMinutes } from '../lib/dayBudget/dayBudget'
+import { addDays, formatRelativeDate, fromISODate, toISODate } from '../lib/dates'
 import { prefersAutoFocus } from '../lib/device'
 import { parseQuickAdd } from '../lib/quickAdd/parseQuickAdd'
 import {
@@ -52,7 +52,11 @@ export function TaskEditorProvider({ children }: { children: ReactNode }) {
   return (
     <TaskEditorContext.Provider value={{ openTask, openNewTask }}>
       {children}
-      {target && <TaskEditorDialog target={target} onClose={() => setTarget(null)} />}
+      {target?.mode === 'edit' && target.task.external ? (
+        <ExternalEventSheet task={target.task} onClose={() => setTarget(null)} />
+      ) : (
+        target && <TaskEditorDialog target={target} onClose={() => setTarget(null)} />
+      )}
     </TaskEditorContext.Provider>
   )
 }
@@ -506,5 +510,75 @@ function AreaPill({
       {color && <span className="size-2 rounded-full" style={{ backgroundColor: color }} />}
       {label}
     </button>
+  )
+}
+
+const eventDateFormatter = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+
+/** Reunião de calendário conectado: só mostra. Para mudar, é no calendário de origem. */
+function ExternalEventSheet({ task, onClose }: { task: Task; onClose: () => void }) {
+  const external = task.external!
+  const start = task.due_time ? timeToMinutes(task.due_time) : null
+  const end = start !== null ? start + (task.duration_minutes ?? 0) : null
+  const date = task.due_date ? eventDateFormatter.format(fromISODate(task.due_date)) : null
+  const isLink = external.location !== null && /^https?:\/\//i.test(external.location)
+
+  return (
+    <Sheet
+      label="Reunião do calendário"
+      onClose={onClose}
+      onSubmit={(event) => {
+        event.preventDefault()
+        onClose()
+      }}
+      header={
+        <div className="flex items-center justify-between gap-2">
+          <span className="inline-flex min-w-0 items-center gap-2 text-sm text-ink-soft">
+            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: external.color }} />
+            <span className="truncate">{external.feedName}</span>
+          </span>
+          <button type="button" onClick={onClose} className="button-quiet p-2" aria-label="Fechar">
+            <Icon name="close" />
+          </button>
+        </div>
+      }
+      footer={
+        <div className="flex justify-end">
+          <button type="submit" className="button-primary">
+            Fechar
+          </button>
+        </div>
+      }
+    >
+      <h2 className="font-display text-2xl font-bold tracking-tight [overflow-wrap:anywhere]">{task.title}</h2>
+      <dl className="mt-4 space-y-3 text-sm">
+        {date && (
+          <div>
+            <dt className="label">Quando</dt>
+            <dd>
+              {date}
+              {start !== null && end !== null && `, ${minutesToClock(start)}–${minutesToClock(end)}`}
+            </dd>
+          </div>
+        )}
+        {external.location && (
+          <div>
+            <dt className="label">Onde</dt>
+            <dd className="[overflow-wrap:anywhere]">
+              {isLink ? (
+                <a href={external.location} target="_blank" rel="noreferrer" className="text-accent underline">
+                  {external.location}
+                </a>
+              ) : (
+                external.location
+              )}
+            </dd>
+          </div>
+        )}
+      </dl>
+      <p className="mt-5 rounded-xl bg-muted p-3 text-[13px] text-ink-soft">
+        Vem do calendário conectado “{external.feedName}”. Para mudar ou cancelar, edite no calendário de origem.
+      </p>
+    </Sheet>
   )
 }
