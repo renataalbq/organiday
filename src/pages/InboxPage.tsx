@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { ExternalInbox } from '../components/ExternalInbox'
 import { Icon } from '../components/Icon'
 import { PageHeader } from '../components/PageHeader'
 import { QuickAdd } from '../components/QuickAdd'
@@ -41,6 +42,8 @@ export function InboxPage() {
         title="Inbox"
         aside={<QuickAdd placeholder="anota rápido, organiza depois" />}
       />
+
+      <ExternalInbox />
 
       <div className="segmented mb-5" role="group" aria-label="Tipo">
         {KIND_TABS.map((tab) => (

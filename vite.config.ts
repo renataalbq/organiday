@@ -3,6 +3,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { handleCalendarEvents } from './server/calendarEvents.js'
+import { integrationsConfigFrom } from './server/integrations/config.js'
+import { handleConnectIntegration, handleIntegrationItems } from './server/integrations/handleIntegrations.js'
 import { mcpConfigFrom } from './server/mcp/config.js'
 import { handleMcp, handleProtectedResourceMetadata } from './server/mcp/handleMcp.js'
 
@@ -16,9 +18,12 @@ function apiInDev(env: Record<string, string>): Plugin {
     supabaseKey: env.VITE_SUPABASE_PUBLISHABLE_KEY ?? '',
   }
   const mcpConfig = mcpConfigFrom(env)
+  const integrationsConfig = integrationsConfigFrom(env)
   const routes: [string, (request: Request) => Response | Promise<Response>][] = [
     ['/api/calendar-events', (request) => handleCalendarEvents(request, calendarConfig)],
     ['/api/mcp', (request) => handleMcp(request, mcpConfig)],
+    ['/api/integrations', (request) => handleConnectIntegration(request, integrationsConfig)],
+    ['/api/integration-items', (request) => handleIntegrationItems(request, integrationsConfig)],
     ['/.well-known/oauth-protected-resource', (request) => handleProtectedResourceMetadata(request, mcpConfig)],
   ]
 

@@ -294,11 +294,23 @@ function ElsewhereSection() {
 
       <div className="border-y border-ink/80">
         <div className={`${shell} grid md:grid-cols-2`}>
-          <div className="hidden border-r border-ink/80 py-9 pr-10 md:block">
+          <div className="border-b border-ink/80 py-9 md:border-r md:border-b-0 md:pr-10">
             <p className={`${mono} text-ink-soft`}>Antes · abas demais, cabeça cheia</p>
-            <div className="relative mt-6 h-[430px] overflow-hidden text-ink" aria-hidden>
+            {/* desktop: espalhado; celular: amontoado, mas cabendo na tela */}
+            <div className="relative mt-6 hidden h-[430px] overflow-hidden text-ink md:block" aria-hidden>
               {MESS.map((item) => (
                 <span key={item.text} className={`absolute whitespace-nowrap ${item.className ?? ''}`} style={item.style}>
+                  {item.text}
+                </span>
+              ))}
+            </div>
+            <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-2 text-ink md:hidden" aria-hidden>
+              {MESS.map((item, index) => (
+                <span
+                  key={item.text}
+                  className={`max-w-full ${item.className ?? ''}`}
+                  style={{ rotate: item.style.rotate ?? `${((index * 7) % 5) - 2}deg` }}
+                >
                   {item.text}
                 </span>
               ))}
@@ -328,8 +340,7 @@ function ElsewhereSection() {
           Reuniões do <b className="font-semibold text-ink">Google Agenda</b> e do{' '}
           <b className="font-semibold text-ink">Outlook</b> entram sozinhas. O que te atribuírem no{' '}
           <b className="font-semibold text-ink">Jira</b>, no <b className="font-semibold text-ink">Trello</b> ou no{' '}
-          <b className="font-semibold text-ink">Asana</b> vai chegar pronto também (em breve), e você só escolhe a hora
-          de puxar.
+          <b className="font-semibold text-ink">Asana</b> chega pronto, e você só escolhe a hora de puxar.
         </span>
       </p>
     </section>

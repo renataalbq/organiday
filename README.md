@@ -66,3 +66,18 @@ O navegador abre o Organiday, você entra (se precisar) e clica em **Permitir**.
 - `api/mcp.ts` e `api/oauth-protected-resource.ts`: funções da Vercel. O `vercel.json` aponta `/.well-known/oauth-protected-resource` pra segunda.
 - `src/pages/OAuthConsentPage.tsx`: tela de Permitir/Não permitir. Depois do login, o `App.tsx` traz a pessoa de volta pra ela.
 - No `npm run dev`, o Vite serve as mesmas rotas.
+
+## Jira, Trello e Asana
+
+Em **Ajustes → Jira, Trello e Asana**, cada pessoa conecta a própria conta com um token. O que estiver atribuído a ela e ainda aberto aparece na **Inbox → Chegou de fora**, e o botão **Puxar** transforma o item em tarefa na área de trabalho, com o link e o contexto nas notas. É só leitura: o Organiday não altera nada nessas ferramentas.
+
+| | O que aparece | Credencial |
+|---|---|---|
+| Jira Cloud | issues atribuídas a você que não estão concluídas | endereço (`empresa.atlassian.net`), e-mail e token de API |
+| Trello | cartões abertos em que você é membro | chave de API e token (pelo painel de Power-Ups) |
+| Asana | tarefas atribuídas a você que não estão concluídas | token de acesso pessoal |
+
+- **Tokens:** o servidor confere o token com a ferramenta e criptografa (AES-256-GCM) antes de salvar na tabela `integrations`. A chave é `ORGANIDAY_SECRET_KEY` e só existe no servidor. Se ela mudar, as integrações precisam ser conectadas de novo.
+- **Sem duplicar:** a tarefa puxada guarda `tasks.external_ref` (ex.: `jira:empresa.atlassian.net:APP-42`), e o item some de "Chegou de fora".
+- **Migration:** `supabase/migrations/0006_integrations.sql`.
+- **Arquivos:** `server/integrations/` (provedores, criptografia, rotas), `api/integrations.ts` e `api/integration-items.ts`, `src/components/IntegrationSettings.tsx` e `src/components/ExternalInbox.tsx`.
