@@ -131,7 +131,7 @@ function Hero({
         onChange={(event) => onTextChange(event.target.value)}
         spellCheck={false}
         autoComplete="off"
-        className="mt-7 block w-full border-b-2 border-ink bg-transparent pb-3 text-[clamp(2.3rem,6.2vw,5.4rem)] leading-[1.1] font-semibold tracking-[-0.045em] outline-none placeholder:text-ink-faint sm:mt-9"
+        className="mt-7 block w-full border-b-2 border-ink bg-transparent pb-3 text-[clamp(2.3rem,6.2vw,5.4rem)] leading-[1.1] font-semibold tracking-[-0.035em] outline-none placeholder:text-ink-faint sm:mt-9"
         placeholder="o que precisa fazer?"
       />
 
@@ -194,7 +194,6 @@ function DaySection({
     end,
     parsed?.dueTime && isToday ? { time: parsed.dueTime, durationMinutes: parsed.durationMinutes } : null,
   )
-  const hours = Array.from({ length: day.endHour - day.startHour + 1 }, (_, index) => day.startHour + index)
 
   return (
     <section className={`${shell} pt-16 pb-16 sm:pt-20 sm:pb-[88px]`}>
@@ -219,9 +218,15 @@ function DaySection({
           />
         ))}
       </div>
-      <div className="mt-3 flex justify-between font-mono text-[10px] text-ink-soft">
-        {hours.map((hour) => (
-          <span key={hour}>{String(hour).padStart(2, '0')}</span>
+      <div className="relative mt-3 h-3 font-mono text-[10px] text-ink-soft" aria-hidden>
+        {day.ticks.map(({ hour, left }) => (
+          <span
+            key={hour}
+            className={`absolute ${left < 1 ? '' : left > 99 ? '-translate-x-full' : '-translate-x-1/2'}`}
+            style={{ left: `${left}%` }}
+          >
+            {String(hour).padStart(2, '0')}
+          </span>
         ))}
       </div>
       <p className="mt-4 text-[13px] text-ink-soft">
@@ -280,7 +285,7 @@ function ElsewhereSection() {
     <section className="border-t border-ink/80">
       <div className={`${shell} pt-16 pb-9 sm:pt-[72px]`}>
         <p className={`${mono} text-ink-soft`}>Você nem precisa escrever tudo</p>
-        <h2 className="mt-4 text-[clamp(2.4rem,5vw,4.3rem)] leading-[1] font-semibold tracking-[-0.045em]">
+        <h2 className="mt-4 text-[clamp(2.4rem,5vw,4.3rem)] leading-[1] font-semibold tracking-[-0.035em]">
           O que já está em outro lugar
           <br />
           <span className="text-accent">chega sozinho.</span>
@@ -338,7 +343,7 @@ function ClaudeSection() {
     <section className="bg-accent text-white">
       <div className={`${shell} pt-16 pb-14 sm:pt-[88px]`}>
         <p className={`${mono} text-white/75`}>De dentro do Claude e do Codex</p>
-        <blockquote className="mt-6 max-w-[980px] text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.1] font-medium tracking-[-0.035em]">
+        <blockquote className="mt-6 max-w-[980px] text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.1] font-medium tracking-[-0.028em]">
           “Claude, abre uma tarefa pra mim amanhã às 10h, no trabalho, pra corrigir esse erro.”
         </blockquote>
         <dl className="mt-8 flex flex-wrap gap-x-9 gap-y-5">
@@ -397,7 +402,7 @@ function MomentsSection() {
         <div key={moment.time} className="border-b border-ink/80">
           <div className={`${shell} grid gap-3 py-10 sm:py-12 md:grid-cols-[230px_1fr_380px] md:gap-8`}>
             <span className="font-mono text-[clamp(2.2rem,3.4vw,3rem)] leading-none text-accent">{moment.time}</span>
-            <h3 className="text-[clamp(1.9rem,3.3vw,2.9rem)] leading-[1.05] font-semibold tracking-[-0.045em]">
+            <h3 className="text-[clamp(1.9rem,3.3vw,2.9rem)] leading-[1.05] font-semibold tracking-[-0.035em]">
               {moment.title}
             </h3>
             <p className="text-[14px] leading-relaxed text-ink-soft md:pt-5">{moment.text}</p>
@@ -457,7 +462,7 @@ function SignUpSection({
   return (
     <section id="entrar" className="scroll-mt-4 bg-[#19191b] text-[#f4f3ef]">
       <div className={`${shell} pt-20 pb-16 sm:pt-[104px]`}>
-        <p className="max-w-[1000px] text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.35] font-medium tracking-[-0.035em]">
+        <p className="max-w-[1000px] text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.35] font-medium tracking-[-0.028em]">
           Me chama de{' '}
           <input
             value={name}
@@ -497,7 +502,7 @@ function SignUpSection({
           {status === 'sent' ? (
             <p className="text-[14px] text-[#c6bfff]">Link enviado para {email}. Abra o e-mail neste aparelho.</p>
           ) : (
-            <form onSubmit={handleMagicLink} className="flex items-center gap-3">
+            <form onSubmit={handleMagicLink} className="flex w-full max-w-[24rem] items-center gap-3">
               <input
                 type="email"
                 required
@@ -506,7 +511,7 @@ function SignUpSection({
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="receber link em seu@email.com"
                 aria-label="E-mail"
-                className="w-[min(100%,22rem)] border-b border-white/40 bg-transparent py-2 text-[15px] outline-none placeholder:text-white/55 focus:border-white"
+                className="w-[min(100%,19rem)] min-w-0 flex-1 border-b border-white/40 bg-transparent py-2 text-[15px] outline-none placeholder:text-white/55 focus:border-white"
               />
               <button
                 type="submit"

@@ -31,5 +31,6 @@ test('posiciona os blocos em % da faixa', () => {
   const typed = day.blocks.find((block) => block.kind === 'typed')!
   assert.equal(Math.round(typed.left), 67)
   assert.equal(Math.round(typed.width), 11)
-  assert.deepEqual([day.startHour, day.endHour], [9, 18])
+  assert.deepEqual(day.ticks.map((tick) => tick.hour), [9, 10, 11, 12, 13, 14, 15, 16, 17, 18])
+  assert.equal(buildDemoDay('08:30', '17:00', null).ticks[0].hour, 9)
 })
