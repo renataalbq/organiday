@@ -39,6 +39,8 @@ export interface Task {
   blocked_reason?: string | null
   /** reunião que vem de um calendário conectado (.ics): só leitura, não existe na tabela tasks */
   external?: ExternalEventInfo
+  /** item do Jira/Trello/Asana que virou esta tarefa. Pode faltar se a migration 0006 não rodou. */
+  external_ref?: string | null
 }
 
 export interface ExternalEventInfo {
@@ -72,6 +74,7 @@ export type NewTask = Pick<Task, 'title'> &
       | 'duration_minutes'
       | 'recurrence'
       | 'blocked_reason'
+      | 'external_ref'
     >
   >
 
@@ -130,4 +133,25 @@ export const KIND_LABEL: Record<TaskKind, string> = {
   task: 'Tarefa',
   decision: 'Decisão',
   meeting: 'Reunião',
+}
+
+export type IntegrationProvider = 'jira' | 'trello' | 'asana'
+
+export interface Integration {
+  id: string
+  provider: IntegrationProvider
+  /** de quem é a conta, ex.: "Renata · empresa.atlassian.net" */
+  account: string
+  created_at: string
+}
+
+/** Algo atribuído à pessoa no Jira, Trello ou Asana, ainda não puxado pro Organiday. */
+export interface ExternalItem {
+  provider: IntegrationProvider
+  ref: string
+  title: string
+  url: string
+  dueDate: string | null
+  dueTime: string | null
+  context: string | null
 }

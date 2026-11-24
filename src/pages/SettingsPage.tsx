@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { signOut, useSession } from '../auth/SessionProvider'
 import { CalendarSettings } from '../components/CalendarSettings'
 import { Icon } from '../components/Icon'
+import { IntegrationSettings } from '../components/IntegrationSettings'
 import { PageHeader } from '../components/PageHeader'
 import { useAreas, useCreateArea, useDeleteArea, useUpdateArea } from '../data/areas'
 import { useSaveSettings, useSettings } from '../data/settings'
@@ -21,6 +22,7 @@ export function SettingsPage() {
         <WorkdaySettings />
         <AreasSettings />
         <CalendarSettings />
+        <IntegrationSettings />
         <AppearanceSettings />
         <AccountSettings />
       </div>
@@ -272,12 +274,12 @@ function AreaRow({ area }: { area: Area }) {
   const isWork = area.kind === 'work'
 
   return (
-    <li className="flex flex-wrap items-center gap-x-4 gap-y-2 py-4">
+    <li className="flex flex-wrap items-center gap-x-2.5 gap-y-2 py-4 sm:gap-x-4">
       <div ref={pickerRef} className="relative">
         <button
           type="button"
           onClick={() => setIsPickingColor((value) => !value)}
-          className="block size-8 rounded-lg ring-offset-2 ring-offset-card hover:ring-2 hover:ring-line-strong"
+          className="block size-8 shrink-0 rounded-lg ring-offset-2 ring-offset-card hover:ring-2 hover:ring-line-strong"
           style={{ backgroundColor: area.color }}
           aria-label={`Trocar a cor de ${area.name}`}
           aria-expanded={isPickingColor}
@@ -308,7 +310,7 @@ function AreaRow({ area }: { area: Area }) {
       </div>
 
       <input
-        className="min-w-0 flex-1 rounded-lg bg-transparent px-2 py-1.5 text-[15px] outline-none focus:bg-muted"
+        className="min-w-[6rem] flex-1 rounded-lg bg-transparent px-2 py-1.5 text-[15px] outline-none focus:bg-muted"
         value={name}
         onChange={(event) => setName(event.target.value)}
         onBlur={saveName}
@@ -322,14 +324,17 @@ function AreaRow({ area }: { area: Area }) {
         role="switch"
         aria-checked={isWork}
         onClick={() => updateArea.mutate({ id: area.id, changes: { kind: isWork ? 'life' : 'work' } })}
-        className="flex items-center gap-2.5 text-[13px] text-ink-soft"
+        className="flex shrink-0 items-center gap-2 text-[13px] text-ink-soft sm:gap-2.5"
+        aria-label={`${area.name} conta como trabalho`}
       >
         <span className={`relative h-5 w-9 rounded-full transition-colors ${isWork ? 'bg-accent' : 'bg-line-strong'}`}>
           <span
             className={`absolute top-0.5 size-4 rounded-full bg-white shadow transition-[left] ${isWork ? 'left-[18px]' : 'left-0.5'}`}
           />
         </span>
-        conta como trabalho
+        {/* no celular o texto inteiro espremia o nome da área */}
+        <span className="sm:hidden">trabalho</span>
+        <span className="hidden sm:inline">conta como trabalho</span>
       </button>
 
       <button
@@ -338,7 +343,7 @@ function AreaRow({ area }: { area: Area }) {
           if (window.confirm(`Excluir a área "${area.name}"? As tarefas dela vão pra Inbox.`))
             deleteArea.mutate(area.id)
         }}
-        className="grid size-9 place-items-center rounded-lg text-ink-faint hover:bg-hover-strong hover:text-alert"
+        className="grid size-9 shrink-0 place-items-center rounded-lg text-ink-faint hover:bg-hover-strong hover:text-alert"
         aria-label={`Excluir ${area.name}`}
       >
         <Icon name="trash" size={16} />
