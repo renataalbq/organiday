@@ -10,8 +10,8 @@ export interface DemoBlock {
 }
 
 export interface DemoDay {
-  startHour: number
-  endHour: number
+  /** horas cheias dentro do expediente, com a posição em % */
+  ticks: { hour: number; left: number }[]
   blocks: DemoBlock[]
   freeLabel: string
 }
@@ -65,8 +65,10 @@ export function buildDemoDay(
   }
 
   return {
-    startHour: Math.floor(start / 60),
-    endHour: Math.ceil(end / 60),
+    ticks: Array.from({ length: Math.floor(end / 60) - Math.ceil(start / 60) + 1 }, (_, index) => {
+      const hour = Math.ceil(start / 60) + index
+      return { hour, left: ((hour * 60 - start) / span) * 100 }
+    }),
     blocks: clipped.map((interval) => ({
       kind: interval.kind,
       left: ((interval.from - start) / span) * 100,
