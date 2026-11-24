@@ -3,6 +3,7 @@ import { signOut, useSession } from '../auth/SessionProvider'
 import { CalendarSettings } from '../components/CalendarSettings'
 import { Icon } from '../components/Icon'
 import { IntegrationSettings } from '../components/IntegrationSettings'
+import { RemindersSettings } from '../components/RemindersSettings'
 import { PageHeader } from '../components/PageHeader'
 import { useAreas, useCreateArea, useDeleteArea, useUpdateArea } from '../data/areas'
 import { useSaveSettings, useSettings } from '../data/settings'
@@ -20,6 +21,7 @@ export function SettingsPage() {
       <PageHeader eyebrow="Seu expediente, suas áreas e sua conta" title="Ajustes" />
       <div className="space-y-6">
         <WorkdaySettings />
+        <RemindersSettings />
         <AreasSettings />
         <CalendarSettings />
         <IntegrationSettings />

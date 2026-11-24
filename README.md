@@ -81,3 +81,20 @@ Em **Ajustes → Jira, Trello e Asana**, cada pessoa conecta a própria conta co
 - **Sem duplicar:** a tarefa puxada guarda `tasks.external_ref` (ex.: `jira:empresa.atlassian.net:APP-42`), e o item some de "Chegou de fora".
 - **Migration:** `supabase/migrations/0006_integrations.sql`.
 - **Arquivos:** `server/integrations/` (provedores, criptografia, rotas), `api/integrations.ts` e `api/integration-items.ts`, `src/components/IntegrationSettings.tsx` e `src/components/ExternalInbox.tsx`.
+
+## Lembretes (notificações)
+
+Em **Ajustes → Lembretes**, cada aparelho ativa as notificações. Elas chegam mesmo com o app fechado:
+
+- **Tarefas com horário:** X minutos antes (na hora, 5, 15, 30 ou 60 min; o padrão é 15).
+- **Tarefas só com data:** no começo do expediente do dia em que vencem (dá pra desligar).
+- **iPhone:** só funciona com o app instalado na Tela de Início (iOS 16.4 ou mais novo).
+
+**Como funciona:** o `pg_cron` do Supabase chama `/api/send-reminders` a cada 5 minutos. O servidor pega o que venceu com `claim_due_reminders()`, que marca `tasks.reminded_at` pra não repetir e usa o fuso de cada pessoa, e manda o push com `web-push` pra cada aparelho em `push_subscriptions`. Mudou a data ou a hora da tarefa, o lembrete volta a valer. O service worker mostra a notificação (`public/push-sw.js`). A chave pública VAPID o app busca em `/api/push-public-key`.
+
+**Configurar:**
+1. Rode `supabase/migrations/0008_reminders.sql`.
+2. Na Vercel, crie: `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY` (gere com `npx web-push generate-vapid-keys`), `CRON_SECRET` (`openssl rand -hex 24`) e `SUPABASE_SERVICE_ROLE_KEY`. Faça um redeploy.
+3. No Supabase, ligue as extensões `pg_cron` e `pg_net` e rode o bloco "Agendar o envio" do fim da migration 0008, com o mesmo `CRON_SECRET`.
+
+No `npm run dev` o service worker não roda, então pra testar as notificações use `npm run build && npm run preview`.
