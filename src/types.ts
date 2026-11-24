@@ -37,7 +37,27 @@ export interface Task {
   started_at?: string | null
   /** motivo de estar travada; aparece nos impedimentos. Pode faltar se a migration 0004 não rodou. */
   blocked_reason?: string | null
+  /** reunião que vem de um calendário conectado (.ics): só leitura, não existe na tabela tasks */
+  external?: ExternalEventInfo
 }
+
+export interface ExternalEventInfo {
+  feedId: string
+  feedName: string
+  color: string
+  location: string | null
+}
+
+export interface CalendarFeed {
+  id: string
+  name: string
+  url: string
+  color: string
+  area_id: string | null
+  created_at: string
+}
+
+export type NewCalendarFeed = Pick<CalendarFeed, 'name' | 'url'> & Partial<Pick<CalendarFeed, 'color' | 'area_id'>>
 
 export type NewTask = Pick<Task, 'title'> &
   Partial<

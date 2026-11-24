@@ -1,3 +1,7 @@
 {
-  "rewrites": [{ "source": "/((?!assets/|.*\\..*).*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/.well-known/oauth-protected-resource", "destination": "/api/oauth-protected-resource" },
+    { "source": "/.well-known/oauth-protected-resource/:path*", "destination": "/api/oauth-protected-resource" },
+    { "source": "/((?!assets/|api/|.*\\..*).*)", "destination": "/index.html" }
+  ]
 }

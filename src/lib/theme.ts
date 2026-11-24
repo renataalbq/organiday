@@ -10,7 +10,7 @@ export type Theme = 'light' | 'dark'
 export const THEME_STORAGE_KEY = 'organiday:theme'
 
 /** cor da barra do navegador/status bar em cada tema (= --color-canvas) */
-const THEME_COLOR: Record<Theme, string> = { light: '#F6F6F4', dark: '#111113' }
+const THEME_COLOR: Record<Theme, string> = { light: '#EBEBE7', dark: '#111113' }
 
 const darkQuery = () => window.matchMedia('(prefers-color-scheme: dark)')
 

@@ -8,6 +8,7 @@ import { QuickAdd } from '../components/QuickAdd'
 import { TaskRow } from '../components/TaskRow'
 import { useTaskEditor } from '../components/TaskEditor'
 import { useAreas } from '../data/areas'
+import { useCalendarMeetings } from '../data/calendar'
 import { useSettings } from '../data/settings'
 import { useTasks } from '../data/tasks'
 import { useNow } from '../hooks/useNow'
@@ -40,6 +41,7 @@ function WeekView({ day, todayISO, now }: { day: string; todayISO: string; now: 
   const { settings } = useSettings()
   const { data: tasks = [], isLoading, error } = useTasks()
   const { areasById } = useAreas()
+  const calendar = useCalendarMeetings(day)
   const isToday = day === todayISO
   const selectedDate = fromISODate(day)
 
@@ -67,9 +69,12 @@ function WeekView({ day, todayISO, now }: { day: string; todayISO: string; now: 
             )
             .sort((a, b) => a.due_date!.localeCompare(b.due_date!))
         : [],
-      events: onDay.filter((task) => task.due_time !== null && task.due_date === day),
+      events: [
+        ...onDay.filter((task) => task.due_time !== null && task.due_date === day),
+        ...calendar.meetings.filter((meeting) => meeting.due_date === day),
+      ],
     }
-  }, [tasks, day, isToday])
+  }, [tasks, calendar.meetings, day, isToday])
 
   const areaOf = (task: Task) => (task.area_id ? areasById.get(task.area_id) : undefined)
 
