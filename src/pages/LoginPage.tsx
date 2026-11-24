@@ -273,7 +273,7 @@ const MESS: { text: string; style: CSSProperties; className?: string }[] = [
 
 const ONE_DAY: { time: string; title: string; source: string; highlight?: boolean }[] = [
   { time: '09:30', title: 'reunião de equipe', source: 'google agenda' },
-  { time: '11:00', title: 'corrigir esse erro', source: 'claude', highlight: true },
+  { time: '11:00', title: 'corrigir validação de CPF no cadastro', source: 'claude', highlight: true },
   { time: '14:00', title: 'revisar relatório do mês', source: 'jira' },
   { time: '15:00', title: 'atualizar planilha de custos', source: 'trello' },
   { time: '16:00', title: 'call com cliente', source: 'outlook' },
@@ -338,31 +338,53 @@ function ElsewhereSection() {
 
 /* ─── Claude e Codex ───────────────────────────────────────────────────── */
 
+const CLAUDE_TASK: [string, string][] = [
+  ['Tarefa', 'corrigir validação de CPF no cadastro de cliente'],
+  ['Quando', 'amanhã'],
+  ['Horário', '10h'],
+  ['Área', 'Trabalho'],
+]
+
+const CLAUDE_NOTES = [
+  'O formulário de cadastro envia o CPF com máscara (123.456.789-00), mas a API só aceita números e responde 422.',
+  'Onde: src/clientes/CadastroForm.tsx:84, no envio do formulário.',
+  'Pra reproduzir: cadastrar um cliente digitando o CPF formatado.',
+  'Sugestão: tirar a máscara antes de enviar e cobrir com um teste.',
+]
+
 function ClaudeSection() {
   return (
     <section className="bg-accent text-white">
       <div className={`${shell} pt-16 pb-14 sm:pt-[88px]`}>
         <p className={`${mono} text-white/75`}>De dentro do Claude e do Codex</p>
-        <blockquote className="mt-6 max-w-[980px] text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.1] font-medium tracking-[-0.028em]">
-          “Claude, abre uma tarefa pra mim amanhã às 10h, no trabalho, pra corrigir esse erro.”
+        <blockquote className="mt-6 max-w-[1040px] text-[clamp(2rem,4.2vw,3.6rem)] leading-[1.1] font-medium tracking-[-0.028em]">
+          “Claude, abre uma tarefa pra mim amanhã às 10h, no trabalho, pra corrigir esse problema no cadastro.”
         </blockquote>
-        <dl className="mt-8 flex flex-wrap gap-x-9 gap-y-5">
-          {[
-            ['Tarefa', 'corrigir esse erro'],
-            ['Quando', 'amanhã'],
-            ['Horário', '10h'],
-            ['Área', 'Trabalho'],
-          ].map(([label, value]) => (
-            <div key={label}>
+
+        <dl className="mt-10 flex flex-wrap gap-x-9 gap-y-5">
+          {CLAUDE_TASK.map(([label, value]) => (
+            <div key={label} className="min-w-0">
               <dt className={`${mono} text-[10px] text-white/75`}>{label}</dt>
-              <dd className="mt-2 border-b-2 border-white/80 pb-1 text-[clamp(1.25rem,2vw,1.65rem)] font-medium tracking-[-0.02em]">
+              <dd className="mt-2 border-b-2 border-white/80 pb-1 text-[clamp(1.25rem,2vw,1.65rem)] leading-tight font-medium tracking-[-0.02em]">
                 {value}
               </dd>
             </div>
           ))}
         </dl>
+
+        <div className="mt-9 max-w-[760px] border-l-2 border-white/45 pl-5">
+          <p className={`${mono} text-[10px] text-white/75`}>Notas · escritas pelo Claude a partir da conversa</p>
+          <div className="mt-3 space-y-1.5 text-[15px] leading-relaxed text-white/90">
+            {CLAUDE_NOTES.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+        </div>
+
         <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-white/30 pt-6">
-          <p className="text-[15px] font-medium">✓ Criada no seu Organiday. Você nem saiu da conversa.</p>
+          <p className="text-[15px] font-medium">
+            ✓ Criada no seu Organiday, com o contexto do problema. Você nem saiu da conversa.
+          </p>
           <p className="font-mono text-[11px] text-white/75">conecta via MCP em um clique</p>
         </div>
       </div>
