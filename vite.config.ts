@@ -6,6 +6,8 @@ import { handleCalendarEvents } from './server/calendarEvents.js'
 import { integrationsConfigFrom } from './server/integrations/config.js'
 import { handleConnectIntegration, handleIntegrationItems } from './server/integrations/handleIntegrations.js'
 import { mcpConfigFrom } from './server/mcp/config.js'
+import { remindersConfigFrom } from './server/reminders/config.js'
+import { handlePushPublicKey, handlePushTest, handleSendReminders } from './server/reminders/handleReminders.js'
 import { handleMcp, handleProtectedResourceMetadata } from './server/mcp/handleMcp.js'
 
 /**
@@ -19,11 +21,15 @@ function apiInDev(env: Record<string, string>): Plugin {
   }
   const mcpConfig = mcpConfigFrom(env)
   const integrationsConfig = integrationsConfigFrom(env)
+  const remindersConfig = remindersConfigFrom(env)
   const routes: [string, (request: Request) => Response | Promise<Response>][] = [
     ['/api/calendar-events', (request) => handleCalendarEvents(request, calendarConfig)],
     ['/api/mcp', (request) => handleMcp(request, mcpConfig)],
     ['/api/integrations', (request) => handleConnectIntegration(request, integrationsConfig)],
     ['/api/integration-items', (request) => handleIntegrationItems(request, integrationsConfig)],
+    ['/api/send-reminders', (request) => handleSendReminders(request, remindersConfig)],
+    ['/api/push-test', (request) => handlePushTest(request, remindersConfig)],
+    ['/api/push-public-key', (request) => handlePushPublicKey(request, remindersConfig)],
     ['/.well-known/oauth-protected-resource', (request) => handleProtectedResourceMetadata(request, mcpConfig)],
   ]
 
@@ -56,7 +62,7 @@ function apiInDev(env: Record<string, string>): Plugin {
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    apiInDev(loadEnv(mode, process.cwd(), ['VITE_', 'ORGANIDAY_'])),
+    apiInDev(loadEnv(mode, process.cwd(), ['VITE_', 'ORGANIDAY_', 'VAPID_', 'CRON_', 'SUPABASE_'])),
     react(),
     tailwindcss(),
     VitePWA({
@@ -79,6 +85,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
+        importScripts: ['push-sw.js'], // lembretes (public/push-sw.js)
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
